@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1033448007163",
+    "project_id": "prm391-final-project",
+    "storage_bucket": "prm391-final-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033448007163:android:e208f0ed5b069a31c1175e",
+        "android_client_info": {
+          "package_name": "fpt.life.finalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033448007163-s7jmf14iih73a07sp6lrc6j4tn4hmfes.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgRP0ANEHYqtKV9uAcSvgxVMCSPUxQnhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033448007163-s7jmf14iih73a07sp6lrc6j4tn4hmfes.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
