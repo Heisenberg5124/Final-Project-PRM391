@@ -6,19 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".screen.homepage.HomepageFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/homepageTextView"
-            android:layout_width="wrap_content"
+        <com.yuyakaido.android.cardstackview.CardStackView
+            android:id="@+id/homepage_view_card_stack"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="8dp">
+
+        </com.yuyakaido.android.cardstackview.CardStackView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Homepage"
-            android:textSize="36sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_weight="0">
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/nope_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_nope"
+                app:cb_color="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/like_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="48dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_like"
+                app:cb_color="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
 </FrameLayout>
