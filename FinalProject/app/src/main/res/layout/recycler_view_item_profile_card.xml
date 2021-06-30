@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/selectableItemBackground"
     android:foreground="?attr/selectableItemBackground"
-    app:cardUseCompatPadding="true"
-    app:cardPreventCornerOverlap="false"
+    app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="8dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true">
 
     <ImageView
         android:id="@+id/item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="119dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:padding="16dp">
+        android:background="#4D757272"
+        android:paddingStart="16dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
 
         <ImageView
             android:id="@+id/imageView3"
@@ -34,15 +36,28 @@
             tools:ignore="VectorDrawableCompat" />
 
         <TextView
+            android:id="@+id/item_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_location"
+            android:drawablePadding="2dp"
+            android:gravity="bottom"
+            android:text="text distance"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_city" />
+
+        <TextView
             android:id="@+id/item_city"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_city"
+            android:drawablePadding="2dp"
             android:gravity="bottom"
             android:text="text city"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_city"
-            android:drawablePadding="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/item_name" />
 
@@ -70,15 +85,6 @@
             app:layout_constraintStart_toEndOf="@+id/item_name"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:padding="16dp">
-
-    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/right_overlay"

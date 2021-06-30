@@ -45,13 +45,14 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
-        TextView name, age, city;
+        TextView name, age, city, distance;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.item_image);
             name = itemView.findViewById(R.id.item_name);
             age = itemView.findViewById(R.id.item_age);
             city = itemView.findViewById(R.id.item_city);
+            distance = itemView.findViewById(R.id.item_distance);
         }
 
         void setData(HomePageProfile data) {
@@ -63,6 +64,7 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
             name.setText(data.getName());
             age.setText(String.valueOf(data.getAge()));
             city.setText(data.getCity());
+            distance.setText(data.getDistance()+" km");
         }
     }
 

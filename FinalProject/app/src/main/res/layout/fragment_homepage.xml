@@ -11,15 +11,49 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.yuyakaido.android.cardstackview.CardStackView
-            android:id="@+id/homepage_view_card_stack"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:clipToPadding="false"
-            android:padding="8dp">
+            android:gravity="center">
 
-        </com.yuyakaido.android.cardstackview.CardStackView>
+            <com.yuyakaido.android.cardstackview.CardStackView
+                android:id="@+id/homepage_view_card_stack"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:padding="8dp"></com.yuyakaido.android.cardstackview.CardStackView>
+
+            <LinearLayout
+                android:id="@+id/layout_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="25dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="30dp"
+                    android:text="No Profile Found" />
+
+                <Button
+                    android:id="@+id/refresh_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Refresh"
+                    android:textColor="#FD4C67"
+                    app:background="@drawable/custom_button_refresh"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@android:color/transparent" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
