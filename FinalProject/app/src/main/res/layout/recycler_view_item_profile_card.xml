@@ -27,7 +27,7 @@
         android:paddingBottom="16dp">
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/info_btn"
             android:layout_width="32dp"
             android:layout_height="38dp"
             app:layout_constraintEnd_toEndOf="parent"

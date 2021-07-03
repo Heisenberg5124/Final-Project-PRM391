@@ -1,8 +1,10 @@
 package fpt.life.finalproject.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,6 +48,7 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
         TextView name, age, city, distance;
+        ImageView infoButton;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.item_image);
@@ -53,6 +56,7 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
             age = itemView.findViewById(R.id.item_age);
             city = itemView.findViewById(R.id.item_city);
             distance = itemView.findViewById(R.id.item_distance);
+            infoButton = itemView.findViewById(R.id.info_btn);
         }
 
         void setData(HomePageProfile data) {
@@ -65,6 +69,14 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
             age.setText(String.valueOf(data.getAge()));
             city.setText(data.getCity());
             distance.setText(data.getDistance()+" km");
+            //info button
+            infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("dm", data.getUid());
+                    //TODO: infoActivity();
+                }
+            });
         }
     }
 
