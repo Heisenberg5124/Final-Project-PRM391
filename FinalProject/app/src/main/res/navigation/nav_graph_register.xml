@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_register.xml"
+    app:startDestination="@id/fragment_register_basic_information">
+
+    <fragment
+        android:id="@+id/fragment_register_basic_information"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterBasicInformationFragment"
+        android:label="fragment_register_basic_information"
+        tools:layout="@layout/fragment_register_basic_information" >
+        <action
+            android:id="@+id/action_fragment_register_basic_information_to_fragment_register_gender"
+            app:destination="@id/fragment_register_gender" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_register_gender"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterGenderFragment"
+        android:label="fragment_register_gender"
+        tools:layout="@layout/fragment_register_gender" >
+        <action
+            android:id="@+id/action_fragment_register_gender_to_fragment_register_show_me"
+            app:destination="@id/fragment_register_show_me" />
+        <argument
+            android:name="registration_profile"
+            app:argType="fpt.life.finalproject.dto.register.RegistrationProfile" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_register_show_me"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterShowMeFragment"
+        android:label="fragment_register_show_me"
+        tools:layout="@layout/fragment_register_show_me" >
+        <action
+            android:id="@+id/action_fragment_register_show_me_to_fragment_register_hobbies"
+            app:destination="@id/fragment_register_hobbies" />
+        <argument
+            android:name="registration_profile"
+            app:argType="fpt.life.finalproject.dto.register.RegistrationProfile" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_register_hobbies"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterHobbiesFragment"
+        android:label="fragment_register_hobbies"
+        tools:layout="@layout/fragment_register_hobbies" >
+        <argument
+            android:name="registration_profile"
+            app:argType="fpt.life.finalproject.dto.register.RegistrationProfile" />
+        <action
+            android:id="@+id/action_fragment_register_hobbies_to_fragment_register_photos"
+            app:destination="@id/fragment_register_photos" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_register_photos"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterPhotosFragment"
+        android:label="fragment_register_photos"
+        tools:layout="@layout/fragment_register_photos" >
+        <argument
+            android:name="registration_profile"
+            app:argType="fpt.life.finalproject.dto.register.RegistrationProfile" />
+    </fragment>
+</navigation>
