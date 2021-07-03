@@ -152,7 +152,8 @@ public class RegisterHobbiesFragment extends Fragment implements RecyclerItemSel
     }
 
     @Override
-    public void onItemClick(Hobby hobby) {
+    public void onItemClick(Object object) {
+        Hobby hobby = (Hobby) object;
         String color = "#FD4C67";
         ButtonUtil buttonUtil = ButtonUtil.builder().button(buttonContinue).build();
 
