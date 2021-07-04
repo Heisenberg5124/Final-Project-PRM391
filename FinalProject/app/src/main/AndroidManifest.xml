@@ -16,7 +16,7 @@
         android:name="androidx.multidex.MultiDexApplication">
 
         <activity android:name=".screen.Login.Profile_Activity"></activity>
-        <activity android:name=".screen.Login.Login_Activity" >
+        <activity android:name=".screen.Login.Login_Activity" />
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".screen.register.ui.RegisterActivity">
