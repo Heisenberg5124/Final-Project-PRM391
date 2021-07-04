@@ -1,53 +1,23 @@
 package fpt.life.finalproject.screen.matched;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Picasso;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
-import fpt.life.finalproject.service.MatchedService;
 
 public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemListener,ChatAdapter.OnItemListener{
     ArrayList<MatchedProfile> profileList = new ArrayList<>();
     ArrayList<MatchedProfile> profileChattedList = new ArrayList<>();
     ArrayList<MatchedProfile> profileMatchedList = new ArrayList<>();
-    MatchedService matchedService = new MatchedService();
     public MatchedFragment() {
         // Required empty public constructor
     }
@@ -76,7 +46,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             LinearLayoutManager layoutManagerMatched = new LinearLayoutManager(getActivity());
             layoutManagerMatched.setOrientation(LinearLayoutManager.HORIZONTAL);
             rvMatched.setLayoutManager(layoutManagerMatched);
-            Log.d("CheckNull",String.valueOf(matchedService.matchedProfiles.size()));
             MatchedAdapter matchedAdapter =  new MatchedAdapter(profileMatchedList,this);
             rvMatched.setAdapter(matchedAdapter);
             //Chat RecyclerView
