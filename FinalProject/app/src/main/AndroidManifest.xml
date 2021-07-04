@@ -23,7 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".editPhoto.EditPhoto_Activity">
+
+        </activity>
+        <activity android:name=".screen.viewOtherProfile.FullScreen" />
+        <activity android:name=".screen.viewOtherProfile.ViewOtherProfile_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
