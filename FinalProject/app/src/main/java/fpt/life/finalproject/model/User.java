@@ -1,7 +1,11 @@
 package fpt.life.finalproject.model;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +26,11 @@ public class User {
     private ArrayList<String> hobbies;
     private String bio;
     private ArrayList<String> photoUrls;
-    private Location location;
+    private GeoPoint location;
     private String city;
+    private Map<String,Integer> rangeAge = new HashMap<>();
+    private int rangeDistance;
 
-    private ArrayList<User> userLiked;
-    private ArrayList<User> userDisliked;
-    private ArrayList<User> userMatched;
+    private ArrayList<String> userLiked;
+    private ArrayList<String> userDisliked;
 }
