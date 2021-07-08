@@ -1,7 +1,13 @@
 package fpt.life.finalproject.screen.register.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,14 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 import com.aminography.choosephotohelper.ChoosePhotoHelper;
-import com.aminography.choosephotohelper.callback.ChoosePhotoCallback;
 
 import java.util.ArrayList;
 
@@ -26,9 +25,10 @@ import fpt.life.finalproject.adapter.PhotoAdapter;
 import fpt.life.finalproject.adapter.PhotoElementClickedListener;
 import fpt.life.finalproject.adapter.RecyclerItemSelectedListener;
 import fpt.life.finalproject.adapter.drapdrop.ItemTouchHelperCallBack;
-import fpt.life.finalproject.adapter.drapdrop.OnStartDragListener;
 import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.Photo;
+import fpt.life.finalproject.service.RegisterService;
+import fpt.life.finalproject.util.ButtonUtil;
 
 public class RegisterPhotosFragment extends Fragment implements PhotoElementClickedListener, RecyclerItemSelectedListener {
 
@@ -41,12 +41,15 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
     private Button buttonDone;
     private PhotoAdapter photoAdapter;
     private ItemTouchHelper itemTouchHelper;
+    private ProgressDialog progressDialog;
 
     private ChoosePhotoHelper choosePhotoHelper;
 
     private ArrayList<Photo> photos = new ArrayList<>();
 
     private RegistrationProfile registrationProfile;
+
+    private RegisterService registerService;
 
     public RegisterPhotosFragment() {
         // Required empty public constructor
@@ -70,14 +73,60 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
 
         initComponents();
         initRecyclerView();
+        initFireBase();
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        onClickButtonDone();
+    }
+
+    private void initFireBase() {
+        registerService = new RegisterService(registrationProfile);
+    }
+
+    private void onClickButtonDone() {
+        /*final NavController navController = Navigation.findNavController(view);
+
+        buttonDone.setOnClickListener(v -> {
+            registrationProfile.setPhotos(registerPhotos());
+
+            RegisterHobbiesFragmentDirections.ActionFragmentRegisterHobbiesToFragmentRegisterPhotos action
+                    = RegisterHobbiesFragmentDirections.actionFragmentRegisterHobbiesToFragmentRegisterPhotos(registrationProfile);
+            navController.navigate(action);
+        });*/
+        buttonDone.setOnClickListener(v -> {
+            registrationProfile.setUid("MockUser" + Math.random());
+            registrationProfile.setPhotoUrls(registerPhotos());
+            loadProgressDialog();
+            registerService.saveUserDataToFireStore(progressDialog);
+        });
+        //Log.d("Upload Image", "UID: " + registrationProfile.getUid());
+    }
+
+    private void loadProgressDialog() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    private ArrayList<String> registerPhotos() {
+        ArrayList<String> registerPhotos = new ArrayList<>();
+        for (Photo photo : photos)
+            if (!photo.isEmpty())
+                registerPhotos.add(photo.getPhotoUri());
+        return registerPhotos;
     }
 
     private void initRecyclerView() {
         photoAdapter = new PhotoAdapter(photos, getActivity(), this, viewHolder -> {
             itemTouchHelper.startDrag(viewHolder);
-        }, this);
+        }, this, buttonDone);
 
         recyclerViewPhotos.setAdapter(photoAdapter);
         recyclerViewPhotos.setLayoutManager(new GridLayoutManager(getContext(), NUM_OF_COLUMNS));
@@ -96,11 +145,7 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
     private void createPhotos() {
         photos.clear();
         for (int i = 0; i < MAX_NUM_OF_PHOTOS; i++) {
-            /*String uri = i > 4 ? null : "https://cdn.discordapp.com/attachments/684269879892901945/858280605409214474/unknown.png";
-            uri = i % 2 == 0 && i <= 4? "https://cdn.discordapp.com/attachments/684269879892901945/859705192961146880/200934929_4041846202597440_3043409035639173606_n.png" : uri;*/
-            //String uri = "https://cdn.discordapp.com/attachments/684269879892901945/858280605409214474/unknown.png";
             Photo photo = Photo.builder()
-                    //.photoUri(uri)
                     .isEmpty(true)
                     .build();
             photos.add(photo);
@@ -119,6 +164,7 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
 
     private void onPlusClick(int position) {
         Photo photo = photos.get(position);
+        ButtonUtil buttonUtil = ButtonUtil.builder().button(buttonDone).build();
         choosePhotoHelper = ChoosePhotoHelper.with(RegisterPhotosFragment.this)
                 .asUri()
                 .build(uri -> {
@@ -126,8 +172,15 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
                     photo.setEmpty(false);
                     photoAdapter.notifyItemChanged(position);
                     Log.d("CheckPhotoPlus", photos.toString() + " " + position);
+                    setButtonDone(buttonUtil);
                 });
         choosePhotoHelper.showChooser();
+        setButtonDone(buttonUtil);
+    }
+
+    private void setButtonDone(ButtonUtil buttonUtil) {
+        buttonUtil.setFilled(!photos.get(0).isEmpty());
+        buttonUtil.setButtonWhenFilled();
     }
 
     private int getFirstIndexOfNull() {

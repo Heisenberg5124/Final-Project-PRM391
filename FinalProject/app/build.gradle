@@ -41,9 +41,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation platform('com.google.firebase:firebase-bom:28.1.0')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.firebase:firebase-storage:20.0.0'
-    implementation 'com.google.firebase:firebase-firestore:23.0.1'
-    implementation 'com.google.firebase:firebase-database:20.0.0'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-storage'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     implementation 'com.squareup.picasso:picasso:2.71828'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'

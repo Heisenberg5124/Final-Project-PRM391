@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -22,6 +23,7 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.drapdrop.ItemTouchHelperAdapter;
 import fpt.life.finalproject.adapter.drapdrop.OnStartDragListener;
 import fpt.life.finalproject.model.Photo;
+import fpt.life.finalproject.util.ButtonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -36,15 +38,17 @@ public class PhotoAdapter extends RecyclerView.Adapter implements ItemTouchHelpe
     private PhotoElementClickedListener photoElementClickedListener;
     private OnStartDragListener onStartDragListener;
     private RecyclerItemSelectedListener recyclerItemSelectedListener;
+    private Button buttonDone;
 
     private int height;
 
-    public PhotoAdapter(ArrayList<Photo> photos, FragmentActivity fragmentActivity, PhotoElementClickedListener photoElementClickedListener, OnStartDragListener onStartDragListener, RecyclerItemSelectedListener recyclerItemSelectedListener) {
+    public PhotoAdapter(ArrayList<Photo> photos, FragmentActivity fragmentActivity, PhotoElementClickedListener photoElementClickedListener, OnStartDragListener onStartDragListener, RecyclerItemSelectedListener recyclerItemSelectedListener, Button buttonDone) {
         this.photos = photos;
         this.fragmentActivity = fragmentActivity;
         this.photoElementClickedListener = photoElementClickedListener;
         this.onStartDragListener = onStartDragListener;
         this.recyclerItemSelectedListener = recyclerItemSelectedListener;
+        this.buttonDone = buttonDone;
     }
 
     @Override
@@ -116,7 +120,10 @@ public class PhotoAdapter extends RecyclerView.Adapter implements ItemTouchHelpe
         notifyItemRemoved(position);
         photos.add(Photo.builder().isEmpty(true).build());
         notifyItemInserted(photos.size() - 1);
-        //notifyDataSetChanged();
+
+        ButtonUtil buttonUtil = ButtonUtil.builder().button(buttonDone).build();
+        buttonUtil.setFilled(!photos.get(0).isEmpty());
+        buttonUtil.setButtonWhenFilled();
         Log.d("CheckPhotoDelete", photos.toString() + " " + position);
     }
 

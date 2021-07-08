@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RoundedSquare">
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="GenderChipStyle" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/gender_chip_background_color</item>
+        <item name="chipStrokeColor">@color/gender_chip_stroke_color</item>
+        <item name="android:textColor">@color/gender_chip_text_color</item>
+    </style>
+
+    <style name="WhiteCursorSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="colorControlActivated">#686868</item>
+    </style>
+</resources>

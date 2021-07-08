@@ -112,7 +112,6 @@ public class RegisterHobbiesFragment extends Fragment implements RecyclerItemSel
             @Override
             public boolean onQueryTextChange(String newText) {
                 List<Hobby> filteredHobbyList = filter(newText);
-                //setAdapter((ArrayList<Hobby>) filteredHobbyList);
                 hobbyAdapter.filterList((ArrayList<Hobby>) filteredHobbyList);
                 return false;
             }

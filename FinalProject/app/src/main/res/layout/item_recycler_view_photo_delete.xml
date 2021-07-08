@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/item_image_view_photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +14,8 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp"
-        app:srcCompat="@drawable/background_add_photo" />
+        app:srcCompat="@drawable/background_add_photo"
+        app:shapeAppearance="@style/RoundedSquare"/>
 
     <ImageView
         android:id="@+id/item_image_view_button_delete_photo"
