@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.navigation.NavController;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,6 +22,7 @@ import java.util.UUID;
 
 import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.User;
+import fpt.life.finalproject.screen.register.ui.RegisterPhotosFragmentDirections;
 import lombok.Data;
 import lombok.SneakyThrows;
 
@@ -31,8 +34,10 @@ public class RegisterService {
 
     private RegistrationProfile registrationProfile;
 
+    private NavController navController;
+
     private ArrayList<String> savedPhotoUrls = new ArrayList<>();
-    int counter;
+    private int counter;
 
     public RegisterService(RegistrationProfile registrationProfile) {
         this.registrationProfile = registrationProfile;
@@ -68,8 +73,10 @@ public class RegisterService {
 
     public void uploadImages(ProgressDialog progressDialog) {
         List<String> photos = registrationProfile.getPhotoUrls();
+        counter = 0;
+        savedPhotoUrls.clear();
+
         for (int i = 0; i < photos.size(); i++) {
-            int index = i;
             String photoUri = photos.get(i);
             Uri uri = Uri.parse(photoUri);
             Log.d("SaveUser", "uploadImages: " + registrationProfile.getUid());
@@ -89,9 +96,9 @@ public class RegisterService {
                             childReference.delete();
                             Log.d("SaveUser", "onFailureGetUrl: ");
                         }
+                        Log.d("SaveUser", "uploadImages: " + counter + " - " + photos.size());
                         if (counter == photos.size()) {
                             saveImageDataToFireStore(progressDialog);
-                            progressDialog.dismiss();
                         }
                     });
                 } else {
@@ -105,12 +112,20 @@ public class RegisterService {
 
     private void saveImageDataToFireStore(ProgressDialog progressDialog) {
         collectionReference.document(registrationProfile.getUid())
-                .update("photoUrls", savedPhotoUrls);/*.addOnSuccessListener(aVoid -> {
-                    progressDialog.dismiss();
-                    Log.d("SaveUser", "onSuccessSaveUrl: " + savedPhotoUrls.size());
-                }).addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Log.d("SaveUser", "onFailureSaveUrl: ");
-                });*/
+                .update("photoUrls", savedPhotoUrls).addOnSuccessListener(aVoid -> {
+            progressDialog.dismiss();
+            Log.d("SaveUser", "onSuccessSaveUrl: " + savedPhotoUrls.size());
+
+            navigateLocation();
+        }).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            Log.d("SaveUser", "onFailureSaveUrl: ");
+        });
+    }
+
+    private void navigateLocation() {
+        RegisterPhotosFragmentDirections.ActionFragmentRegisterPhotosToFragmentRegisterLocation action
+                = RegisterPhotosFragmentDirections.actionFragmentRegisterPhotosToFragmentRegisterLocation(registrationProfile.getUid());
+        navController.navigate(action);
     }
 }

@@ -12,6 +12,8 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,15 +91,9 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
     }
 
     private void onClickButtonDone() {
-        /*final NavController navController = Navigation.findNavController(view);
+        final NavController navController = Navigation.findNavController(view);
+        registerService.setNavController(navController);
 
-        buttonDone.setOnClickListener(v -> {
-            registrationProfile.setPhotos(registerPhotos());
-
-            RegisterHobbiesFragmentDirections.ActionFragmentRegisterHobbiesToFragmentRegisterPhotos action
-                    = RegisterHobbiesFragmentDirections.actionFragmentRegisterHobbiesToFragmentRegisterPhotos(registrationProfile);
-            navController.navigate(action);
-        });*/
         buttonDone.setOnClickListener(v -> {
             registrationProfile.setUid("MockUser" + Math.random());
             registrationProfile.setPhotoUrls(registerPhotos());
