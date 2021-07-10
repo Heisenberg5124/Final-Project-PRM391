@@ -17,7 +17,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import fpt.life.finalproject.dto.register.RegistrationProfile;
@@ -48,6 +50,10 @@ public class RegisterService {
 
     @SneakyThrows
     public void saveUserDataToFireStore(ProgressDialog progressDialog) {
+        Map<String, Integer> rangeAge = new HashMap<>();
+        rangeAge.put("max", 50);
+        rangeAge.put("min", 18);
+
         User user = User.builder()
                 .uid(registrationProfile.getUid())
                 .name(registrationProfile.getName())
@@ -58,6 +64,10 @@ public class RegisterService {
                 .gender(registrationProfile.getGender())
                 .showMeGender(registrationProfile.getShowMeGender())
                 .hobbies((ArrayList<String>) registrationProfile.getHobbies())
+                .rangeAge(rangeAge)
+                .rangeDistance(5)
+                .userDisliked(new ArrayList<>())
+                .userLiked(new ArrayList<>())
                 .build();
         Log.d("SaveUser", "onSaveUser: " + user.getUid());
 
@@ -123,7 +133,7 @@ public class RegisterService {
         });
     }
 
-    private void navigateLocation() {
+    public void navigateLocation() {
         RegisterPhotosFragmentDirections.ActionFragmentRegisterPhotosToFragmentRegisterLocation action
                 = RegisterPhotosFragmentDirections.actionFragmentRegisterPhotosToFragmentRegisterLocation(registrationProfile.getUid());
         navController.navigate(action);
