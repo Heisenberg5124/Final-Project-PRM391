@@ -2,6 +2,7 @@ package fpt.life.finalproject.screen.myprofile;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,9 +20,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.slider.RangeSlider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -30,8 +33,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MyProfile;
+import fpt.life.finalproject.screen.Login.Login_Activity;
+import fpt.life.finalproject.screen.Login.Profile_Activity;
 import fpt.life.finalproject.service.MyProfileService;
 
 public class MyProfileFragment extends Fragment {
@@ -68,7 +74,6 @@ public class MyProfileFragment extends Fragment {
         return rootView;
     }
 
-
     private void editImage(Button button){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +89,7 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(),"Chua lam",Toast.LENGTH_LONG).show();//TODO: Action Logout
+                signOut();
             }
         });
     }
@@ -248,5 +254,17 @@ public class MyProfileFragment extends Fragment {
             });
             chipGroup.addView(chip);
         }
+    }
+
+    public void signOut() {
+        // [START auth_fui_signout]
+        AuthUI.getInstance()
+                .signOut(getActivity())
+                .addOnCompleteListener(task -> {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(getContext(), Login_Activity.class));
+                    getActivity().finish();
+                });
+        // [END auth_fui_signout]
     }
 }

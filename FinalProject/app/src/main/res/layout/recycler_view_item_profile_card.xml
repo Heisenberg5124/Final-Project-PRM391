@@ -39,7 +39,7 @@
             android:id="@+id/item_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_location"
+            android:drawableLeft="@drawable/ic_location_profile"
             android:drawablePadding="2dp"
             android:gravity="bottom"
             android:text="text distance"
