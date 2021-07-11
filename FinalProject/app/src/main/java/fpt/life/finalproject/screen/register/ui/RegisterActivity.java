@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
 import androidx.navigation.fragment.NavHostFragment;
 
 import fpt.life.finalproject.R;
@@ -13,7 +14,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private ImageView buttonBack;
     private ImageView buttonClose;
-    NavHostFragment navHostFragment;
+    private NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -18,15 +18,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import fpt.life.finalproject.R;
-import fpt.life.finalproject.service.BaseGpsListener;
+import fpt.life.finalproject.service.LocationService;
 
-public class RegisterLocationFragment extends Fragment implements BaseGpsListener {
+public class RegisterLocationFragment extends Fragment {
 
     private final static int PERMISSION_LOCATION = 1000;
 
     private View view;
 
     private Button buttonLocation;
+
+    private LocationService locationService;
+
+    private String uid;
 
     public RegisterLocationFragment() {
         // Required empty public constructor
@@ -37,7 +41,7 @@ public class RegisterLocationFragment extends Fragment implements BaseGpsListene
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             RegisterLocationFragmentArgs args = RegisterLocationFragmentArgs.fromBundle(getArguments());
-            String uid = args.getUserUid();
+            uid = args.getUserUid();
             Log.i("Check Arguments", "onViewCreated: " + uid);
         }
     }
@@ -55,6 +59,7 @@ public class RegisterLocationFragment extends Fragment implements BaseGpsListene
 
     private void initComponents() {
         buttonLocation = view.findViewById(R.id.button_register_allow_location);
+        locationService = new LocationService(getContext(), uid);
 
         buttonLocation.setOnClickListener(view -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
@@ -62,7 +67,7 @@ public class RegisterLocationFragment extends Fragment implements BaseGpsListene
                 != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
             } else {
-                showLocation();
+                locationService.showLocation();
             }
         });
     }
@@ -71,45 +76,10 @@ public class RegisterLocationFragment extends Fragment implements BaseGpsListene
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showLocation();
+                locationService.showLocation();
             } else {
                 Log.d("CheckLocation", "onRequestPermissionsResult: ");
             }
         }
-    }
-
-    private void showLocation() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.d("CheckLocation", "Loading location...");
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        } else {
-            Log.d("CheckLocation", "Please enable GPS");
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.d("CheckLocation", "CheckLocation: " + location.getLatitude() + "_" + location.getLongitude());
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onGpsStatusChanged(int event) {
-
     }
 }
