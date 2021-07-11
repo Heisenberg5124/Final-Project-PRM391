@@ -35,18 +35,5 @@ public class Profile_Activity extends AppCompatActivity {
                 email.setText("Email: "+auth.getCurrentUser().getEmail());
             }
         }
-        Button logout = findViewById(R.id.logout_btn);
-        logout.setOnClickListener(v -> signOut());
-    }
-    public void signOut() {
-        // [START auth_fui_signout]
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(task -> {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(Profile_Activity.this,Login_Activity.class));
-                    finish();
-                });
-        // [END auth_fui_signout]
     }
 }

@@ -18,11 +18,11 @@
 
         <activity android:name=".screen.Login.Profile_Activity"></activity>
         <activity android:name=".screen.Login.Login_Activity">
-            <!--<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
             <!--<intent-filter>
@@ -40,11 +40,11 @@
         </intent-filter>-->
         </activity>
         <activity android:name=".screen.register.ui.RegisterActivity">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <meta-data
