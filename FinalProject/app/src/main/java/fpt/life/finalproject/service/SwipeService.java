@@ -79,7 +79,6 @@ public class SwipeService {
         Log.d("size", userList.size()+"");
         for (Map.Entry<String, User> entry : userList.entrySet()) {
             if (checkValidUser(entry.getValue())) {
-                Log.d("ok", "ok");
                 String uid = entry.getValue().getUid();
                 String image = entry.getValue().getPhotoUrls().get(0);
                 String name = entry.getValue().getName();

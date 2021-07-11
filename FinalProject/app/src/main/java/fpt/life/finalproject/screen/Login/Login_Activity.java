@@ -78,7 +78,7 @@ public class Login_Activity extends AppCompatActivity {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .setLogo(R.drawable.logo)
-
+                .setTheme(R.style.AppThemeFirebaseAuth)
                 .build();
         signInLauncher.launch(signInIntent);
         // [END auth_fui_create_intent]
