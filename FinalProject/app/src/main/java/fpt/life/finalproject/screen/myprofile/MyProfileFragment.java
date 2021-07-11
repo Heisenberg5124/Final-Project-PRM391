@@ -45,6 +45,7 @@ public class MyProfileFragment extends Fragment {
     private Button logout;
     private Button editImage;
     private View rootView;
+    private MyProfile myProfile;
     MyProfileService myProfileService = new MyProfileService();
     public MyProfileFragment() {
         // Required empty public constructor
@@ -63,6 +64,7 @@ public class MyProfileFragment extends Fragment {
         birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
         logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
         editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
+        myProfile = getArguments().getParcelable("myProfile");
         inputBirthday();
         setSpinner();
         addGroupHobby(addHobbies());
@@ -70,7 +72,6 @@ public class MyProfileFragment extends Fragment {
         setDistanceSlider(20);
         logOut(logout);
         editImage(editImage);
-
         return rootView;
     }
 
@@ -193,9 +194,11 @@ public class MyProfileFragment extends Fragment {
     private void inputBirthday(){
         final Calendar c = Calendar.getInstance();
         //TODO: change to birthday of my profile
+        c.setTime(myProfile.getBirthday());
         int mYear = c.get(Calendar.YEAR); // current year
         int mMonth = c.get(Calendar.MONTH); // current month
-        int mDay = c.get(Calendar.DAY_OF_MONTH); // current day
+        int mDay = c.get(Calendar.DATE); // current day
+        birthday.setText(mDay + "/" + (mMonth) + "/" + mYear);
         birthday.setOnClickListener(v ->{
             setDate(birthday,mYear,mMonth,mDay);
         });

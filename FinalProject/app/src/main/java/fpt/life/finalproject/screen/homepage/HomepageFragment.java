@@ -1,6 +1,9 @@
 package fpt.life.finalproject.screen.homepage;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -15,6 +18,7 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
 import com.yuyakaido.android.cardstackview.CardStackView;
@@ -28,6 +32,7 @@ import at.markushi.ui.CircleButton;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
 import fpt.life.finalproject.dto.HomePageProfile;
+import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.SwipeService;
 
 public class HomepageFragment extends Fragment {
@@ -35,6 +40,8 @@ public class HomepageFragment extends Fragment {
 //    private Map<String, User> userList;
 //    private List<HomePageProfile> homePageProfileList = new ArrayList<>();
 //    private User currentUser;
+    private final static int PERMISSION_LOCATION = 1000;
+    private LocationService locationService;
     private SwipeService swipeService;
 
     private String currentUserId;
@@ -142,6 +149,7 @@ public class HomepageFragment extends Fragment {
         //get bundle current user id
         currentUserId = getArguments().getString("currentUserId");
 
+
         loadingProfile(root);
 
     }
@@ -156,7 +164,17 @@ public class HomepageFragment extends Fragment {
     }
 
     private void loadingProfile(View root) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+        } else {
+            locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
+            locationService.updateLocation();
+        }
+
         loadProgressDialog();
+        LocationService locationService = new LocationService(getContext(),currentUserId);
         countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -170,14 +188,13 @@ public class HomepageFragment extends Fragment {
                     Log.d("pro1", "timeout");
                 } else {
                     swipeService.loadProfiles(currentUserId);
-
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();
                     moreTimeToDismissDialog(progressDialog, 1000);
                 }
             }
         }.start();
-        swipeService.getAllDocument(countDownTimer);
+        swipeService.getAllDocument(countDownTimer, locationService);
     }
 
     private void moreTimeToDismissDialog(ProgressDialog progressDialog, int time) {

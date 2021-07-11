@@ -13,6 +13,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import lombok.Data;
+
+@Data
 public class LocationService {
 
     private DocumentReference documentReference;
@@ -27,7 +30,7 @@ public class LocationService {
                 .document(uid);
     }
 
-    public void showLocation() {
+    public void updateLocation() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.d("CheckLocation", "Loading location...");

@@ -1,11 +1,9 @@
 package fpt.life.finalproject;
 
 import android.app.ProgressDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -16,22 +14,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import fpt.life.finalproject.dto.MyProfile;
 import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
+import fpt.life.finalproject.service.LocationService;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static int PERMISSION_LOCATION = 1000;
+
+    private LocationService locationService;
     private ImageView profileImageView;
     private ImageView matchedImageView;
     private ImageView logoImageView;
@@ -92,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         sendDataToHomePage();
         sendDataToMatched();
         sendDataToMyProfile();
+        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)
@@ -146,5 +144,15 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         bundle.putParcelable("myProfile", myProfile);
         myProfileFragment.setArguments(bundle);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationService.updateLocation();
+            }
+        }
     }
 }

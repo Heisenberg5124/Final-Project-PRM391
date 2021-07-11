@@ -1,14 +1,10 @@
 package fpt.life.finalproject.screen.register.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -67,7 +63,7 @@ public class RegisterLocationFragment extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
                 getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
             } else {
-                locationService.showLocation();
+                locationService.updateLocation();
             }
         });
     }
