@@ -65,21 +65,10 @@ public class RegisterLocationFragment extends Fragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+                getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
             } else {
                 locationService.showLocation();
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationService.showLocation();
-            } else {
-                Log.d("CheckLocation", "onRequestPermissionsResult: ");
-            }
-        }
     }
 }
