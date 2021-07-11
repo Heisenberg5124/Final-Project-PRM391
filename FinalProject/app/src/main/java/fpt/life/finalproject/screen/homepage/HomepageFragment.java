@@ -37,6 +37,7 @@ public class HomepageFragment extends Fragment {
 //    private User currentUser;
     private SwipeService swipeService;
 
+    private String currentUserId;
     private Button refreshButton;
     private ImageView infoButton;
     private CardStackLayoutManager cardManager;
@@ -138,6 +139,9 @@ public class HomepageFragment extends Fragment {
             }
         });
 
+        //get bundle current user id
+        currentUserId = getArguments().getString("currentUserId");
+
         loadingProfile(root);
 
     }
@@ -165,7 +169,7 @@ public class HomepageFragment extends Fragment {
                     progressDialog.dismiss();
                     Log.d("pro1", "timeout");
                 } else {
-                    swipeService.loadProfiles();
+                    swipeService.loadProfiles(currentUserId);
 
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();

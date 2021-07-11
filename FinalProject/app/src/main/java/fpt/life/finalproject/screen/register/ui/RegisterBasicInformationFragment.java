@@ -19,6 +19,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -126,6 +128,7 @@ public class RegisterBasicInformationFragment extends Fragment {
 
         buttonContinue.setOnClickListener(v -> {
             registrationProfile = RegistrationProfile.builder()
+                    .uid(FirebaseAuth.getInstance().getUid())
                     .name(editTextName.getText().toString())
                     .birthday(editTextBirthday.getText().toString())
                     .city(editTextCity.getText().toString())

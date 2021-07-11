@@ -95,7 +95,6 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
         registerService.setNavController(navController);
 
         buttonDone.setOnClickListener(v -> {
-            registrationProfile.setUid("MockUser" + Math.random());
             registrationProfile.setPhotoUrls(registerPhotos());
             loadProgressDialog();
             registerService.saveUserDataToFireStore(progressDialog);

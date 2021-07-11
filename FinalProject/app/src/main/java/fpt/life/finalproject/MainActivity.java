@@ -1,33 +1,54 @@
 package fpt.life.finalproject;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import fpt.life.finalproject.dto.MyProfile;
+import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView profileImageView;
-    ImageView matchedImageView;
-    ImageView logoImageView;
+    private ImageView profileImageView;
+    private ImageView matchedImageView;
+    private ImageView logoImageView;
+    private User currentUser;
 
-    MyProfileFragment myProfileFragment;
-    MatchedFragment matchedFragment;
-    HomepageFragment homepageFragment;
+    private MyProfileFragment myProfileFragment;
+    private MatchedFragment matchedFragment;
+    private HomepageFragment homepageFragment;
+    private ProgressDialog progressDialog;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         findView();
-        initFragment();
+        loadProgressDialog();
+        getCurrentUser("AmfYFNPgJxbltQfOhOUEkmfvEx63");
 
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
@@ -67,10 +88,62 @@ public class MainActivity extends AppCompatActivity {
         myProfileFragment = new MyProfileFragment();
         matchedFragment = new MatchedFragment();
         homepageFragment = new HomepageFragment();
-
+        sendDataToHomePage();
+        sendDataToMatched();
+        sendDataToMyProfile();
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)
                 .commit();
+    }
+
+    private void loadProgressDialog() {
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    public void getCurrentUser(String currentUserId) {
+
+        db.collection("users").document(currentUserId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        currentUser = task.getResult().toObject(User.class);
+                        progressDialog.dismiss();
+
+                        initFragment();
+                    }
+                });
+    }
+
+    private void sendDataToHomePage(){
+        Bundle bundle = new Bundle();
+        bundle.putString("currentUserId",currentUser.getUid());
+        homepageFragment.setArguments(bundle);
+    }
+
+    private void sendDataToMatched(){
+        Bundle bundle = new Bundle();
+        bundle.putString("currentUserId",currentUser.getUid());
+        matchedFragment.setArguments(bundle);
+    }
+
+    private void sendDataToMyProfile(){
+        Bundle bundle = new Bundle();
+        MyProfile myProfile = MyProfile.builder()
+                .uid(currentUser.getUid())
+                .name(currentUser.getName())
+                .birthday(currentUser.getBirthday())
+                .gender(currentUser.getGender())
+                .hobbies(currentUser.getHobbies())
+                .showMeGender(currentUser.getShowMeGender())
+                .avt(currentUser.getPhotoUrls().get(0))
+                .build();
+        bundle.putParcelable("myProfile", myProfile);
+        myProfileFragment.setArguments(bundle);
     }
 }

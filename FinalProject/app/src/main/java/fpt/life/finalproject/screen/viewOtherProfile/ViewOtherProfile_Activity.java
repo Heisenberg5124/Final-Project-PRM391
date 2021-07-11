@@ -4,6 +4,8 @@ package fpt.life.finalproject.screen.viewOtherProfile;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.chip.Chip;
@@ -81,6 +84,7 @@ public class ViewOtherProfile_Activity extends AppCompatActivity{
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void addGroupImage(String[] images)  {
         /*DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
@@ -95,6 +99,7 @@ public class ViewOtherProfile_Activity extends AppCompatActivity{
         gridLayout = findViewById(R.id.grid_layout);
         gridLayout.setColumnCount(2);
         gridLayout.setRowCount((int) Math.ceil((double) images.length / 2));
+//        gridLayout.setPadding(10,0,10,0);
 
         for (int i = 1, c = 0, r = 0; i < images.length; i++, c++) {
             if (c == 2) {
@@ -109,12 +114,18 @@ public class ViewOtherProfile_Activity extends AppCompatActivity{
             //oImageView.setPadding((int) ((dpWidth - 10) * 0.075f), 0, (int) ((dpWidth - 10) * 0.075f), 0);
 
             GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-            param.width = (int) (dpWidth * 0.35f);
-            param.height = (int) (dpWidth * 0.35f * 1.18f);
-            param.leftMargin = 10;
-            param.rightMargin = 10;
-            param.bottomMargin = 10;
-            param.topMargin = 10;
+            Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+            int screenWidth = size.x;
+            int screenHeight = size.y;
+            int halfScreenWidth = (int)(screenWidth *0.5);
+            int quarterScreenWidth = (int)(halfScreenWidth * 0.5);
+            param.width = halfScreenWidth-50;
+            param.height = (int) (halfScreenWidth * 1.5);
+            param.leftMargin = 20;
+            param.rightMargin = 20;
+            param.bottomMargin = 20;
+            param.topMargin = 20;
             param.setGravity(Gravity.CENTER);
             param.columnSpec = GridLayout.spec(c);
             param.rowSpec = GridLayout.spec(r);
