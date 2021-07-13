@@ -73,6 +73,7 @@ public class RegisterService {
                 .rangeDistance(5)
                 .userDisliked(new ArrayList<>())
                 .userLiked(new ArrayList<>())
+                .onlineStatus(true)
                 .build();
         Log.d("SaveUser", "onSaveUser: " + user.getUid());
 

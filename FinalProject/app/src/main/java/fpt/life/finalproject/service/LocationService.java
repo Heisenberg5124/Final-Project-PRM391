@@ -13,17 +13,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.io.IOException;
 import java.util.List;
 
 import lombok.Data;
@@ -40,6 +35,7 @@ public class LocationService {
     private Context context;
     private String uid;
     private LocationManager locationManager;
+    private boolean isLocationGranted;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -91,11 +87,13 @@ public class LocationService {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        isLocationGranted = true;
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
+                        isLocationGranted = false;
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -106,14 +104,6 @@ public class LocationService {
         if (location != null) {
             documentReference.update("location", new GeoPoint(location.getLatitude(), location.getLongitude()));
             documentReference.update("city", getCityFromLocation(location));
-                    /*.addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @SneakyThrows
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("CheckLocation", "onComplete: " + location.getLatitude() + "_" + location.getLongitude());
-                            Log.d("CheckLocation", "onComplete: " + getCityFromLocation(location));
-                        }
-                    });*/
         }
     }
 
