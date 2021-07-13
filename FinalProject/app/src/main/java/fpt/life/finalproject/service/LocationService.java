@@ -104,15 +104,16 @@ public class LocationService {
 
     private void updateLocation(Location location) {
         if (location != null) {
-            documentReference.update("location", new GeoPoint(location.getLatitude(), location.getLongitude()))
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+            documentReference.update("location", new GeoPoint(location.getLatitude(), location.getLongitude()));
+            documentReference.update("city", getCityFromLocation(location));
+                    /*.addOnCompleteListener(new OnCompleteListener<Void>() {
                         @SneakyThrows
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Log.d("CheckLocation", "onComplete: " + location.getLatitude() + "_" + location.getLongitude());
                             Log.d("CheckLocation", "onComplete: " + getCityFromLocation(location));
                         }
-                    });
+                    });*/
         }
     }
 
