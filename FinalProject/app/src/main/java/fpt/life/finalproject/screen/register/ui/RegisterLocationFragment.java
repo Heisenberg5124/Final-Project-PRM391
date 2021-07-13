@@ -1,6 +1,9 @@
 package fpt.life.finalproject.screen.register.ui;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.RegisterService;
 
 public class RegisterLocationFragment extends Fragment {
 
@@ -58,13 +63,12 @@ public class RegisterLocationFragment extends Fragment {
         locationService = new LocationService(getContext(), uid);
 
         buttonLocation.setOnClickListener(view -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-                getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
-            } else {
-                locationService.updateLocation();
-            }
+            locationService.getLastKnownLocation();
+            Context context = getContext();
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("uid", uid);
+            context.startActivity(intent);
+            ((Activity) context).finish();
         });
     }
 }

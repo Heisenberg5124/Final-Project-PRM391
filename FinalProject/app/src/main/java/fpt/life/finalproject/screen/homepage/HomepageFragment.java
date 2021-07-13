@@ -40,8 +40,6 @@ public class HomepageFragment extends Fragment {
 //    private Map<String, User> userList;
 //    private List<HomePageProfile> homePageProfileList = new ArrayList<>();
 //    private User currentUser;
-    private final static int PERMISSION_LOCATION = 1000;
-    private LocationService locationService;
     private SwipeService swipeService;
 
     private String currentUserId;
@@ -164,17 +162,10 @@ public class HomepageFragment extends Fragment {
     }
 
     private void loadingProfile(View root) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
-        } else {
-            locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
-            locationService.updateLocation();
-        }
+        LocationService locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
+        locationService.getLastKnownLocation();
 
         loadProgressDialog();
-        LocationService locationService = new LocationService(getContext(),currentUserId);
         countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -194,7 +185,7 @@ public class HomepageFragment extends Fragment {
                 }
             }
         }.start();
-        swipeService.getAllDocument(countDownTimer, locationService);
+        swipeService.getAllDocument(countDownTimer);
     }
 
     private void moreTimeToDismissDialog(ProgressDialog progressDialog, int time) {

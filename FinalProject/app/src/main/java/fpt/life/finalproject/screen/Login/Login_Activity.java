@@ -45,7 +45,6 @@ public class Login_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         updateUI(mAuth.getCurrentUser());
-        createSignInIntent();
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
@@ -90,6 +89,7 @@ public class Login_Activity extends AppCompatActivity {
             navigateAfterLogin(user.getUid());
         }else {
             Log.d("bug" , "user null");
+            createSignInIntent();
         }
     }
 
@@ -102,13 +102,12 @@ public class Login_Activity extends AppCompatActivity {
                         DocumentSnapshot documentUser = task.getResult();
                         if (documentUser.exists()){
                             startActivity(new Intent(Login_Activity.this, MainActivity.class));
-                            finish();
                         }else {
                             Intent i = new Intent(Login_Activity.this, RegisterActivity.class);
                             i.putExtra("uid",currentUserId);
                             startActivity(i);
-                            finish();
                         }
+                        finish();
                     }
                 });
     }

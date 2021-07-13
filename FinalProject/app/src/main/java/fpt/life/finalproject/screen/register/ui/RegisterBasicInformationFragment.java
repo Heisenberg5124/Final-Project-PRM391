@@ -34,11 +34,9 @@ public class RegisterBasicInformationFragment extends Fragment {
 
     private EditText editTextName;
     private EditText editTextBirthday;
-    private EditText editTextCity;
     private EditText editTextBio;
     private TextView textViewWordCounter;
     private Button buttonContinue;
-    private DatePickerDialog datePickerDialog;
 
     private final Calendar calendar = Calendar.getInstance();
 
@@ -93,7 +91,6 @@ public class RegisterBasicInformationFragment extends Fragment {
     private void initComponents() {
         editTextName = view.findViewById(R.id.edit_text_name);
         editTextBirthday = view.findViewById(R.id.edit_text_birthday);
-        editTextCity = view.findViewById(R.id.edit_text_city);
         editTextBio = view.findViewById(R.id.edit_text_bio);
         textViewWordCounter = view.findViewById(R.id.text_view_word_counter);
         buttonContinue = view.findViewById(R.id.button_register_continue_basic_information);
@@ -131,7 +128,6 @@ public class RegisterBasicInformationFragment extends Fragment {
                     .uid(FirebaseAuth.getInstance().getUid())
                     .name(editTextName.getText().toString())
                     .birthday(editTextBirthday.getText().toString())
-                    .city(editTextCity.getText().toString())
                     .bio(editTextBio.getText().toString())
                     .build();
 

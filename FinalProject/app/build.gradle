@@ -61,4 +61,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.yuyakaido.android:card-stack-view:2.3.4'
     implementation 'com.github.markushi:circlebutton:1.1'
+    implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'pub.devrel:easypermissions:2.0.1'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
 }

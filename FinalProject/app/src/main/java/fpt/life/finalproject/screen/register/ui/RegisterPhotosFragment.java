@@ -29,6 +29,7 @@ import fpt.life.finalproject.adapter.RecyclerItemSelectedListener;
 import fpt.life.finalproject.adapter.drapdrop.ItemTouchHelperCallBack;
 import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.Photo;
+import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.RegisterService;
 import fpt.life.finalproject.util.ButtonUtil;
 
@@ -87,7 +88,7 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
     }
 
     private void initFireBase() {
-        registerService = new RegisterService(registrationProfile);
+        registerService = new RegisterService(registrationProfile, getContext());
     }
 
     private void onClickButtonDone() {
@@ -96,11 +97,9 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
 
         buttonDone.setOnClickListener(v -> {
             registrationProfile.setPhotoUrls(registerPhotos());
-            //registerService.navigateLocation();
             loadProgressDialog();
             registerService.saveUserDataToFireStore(progressDialog);
         });
-        //Log.d("Upload Image", "UID: " + registrationProfile.getUid());
     }
 
     private void loadProgressDialog() {

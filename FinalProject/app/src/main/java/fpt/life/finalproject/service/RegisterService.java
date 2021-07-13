@@ -1,27 +1,28 @@
 package fpt.life.finalproject.service;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.navigation.NavController;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.register.ui.RegisterPhotosFragmentDirections;
@@ -35,17 +36,21 @@ public class RegisterService {
     private CollectionReference collectionReference;
 
     private RegistrationProfile registrationProfile;
+    private LocationService locationService;
 
     private NavController navController;
+    private Context context;
 
     private ArrayList<String> savedPhotoUrls = new ArrayList<>();
     private int counter;
 
-    public RegisterService(RegistrationProfile registrationProfile) {
+    public RegisterService(RegistrationProfile registrationProfile, Context context) {
         this.registrationProfile = registrationProfile;
+        this.context = context;
         this.storageReference = FirebaseStorage.getInstance().getReference("profile_photos");
         this.collectionReference = FirebaseFirestore.getInstance()
                 .collection("users");
+        this.locationService = new LocationService(context, registrationProfile.getUid());
     }
 
     @SneakyThrows
@@ -126,16 +131,27 @@ public class RegisterService {
             progressDialog.dismiss();
             Log.d("SaveUser", "onSuccessSaveUrl: " + savedPhotoUrls.size());
 
-            navigateLocation();
+            if (locationService.isProviderEnabled()) {
+                locationService.getLastKnownLocation();
+                navigateHomePage();
+            } else
+                navigateLocation();
         }).addOnFailureListener(e -> {
             progressDialog.dismiss();
             Log.d("SaveUser", "onFailureSaveUrl: ");
         });
     }
 
-    public void navigateLocation() {
+    private void navigateLocation() {
         RegisterPhotosFragmentDirections.ActionFragmentRegisterPhotosToFragmentRegisterLocation action
                 = RegisterPhotosFragmentDirections.actionFragmentRegisterPhotosToFragmentRegisterLocation(registrationProfile.getUid());
         navController.navigate(action);
+    }
+
+    private void navigateHomePage() {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("uid", registrationProfile.getUid());
+        context.startActivity(intent);
+        ((Activity) context).finish();
     }
 }
