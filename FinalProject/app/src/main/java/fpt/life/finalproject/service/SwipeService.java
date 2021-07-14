@@ -43,7 +43,7 @@ public class SwipeService {
     }
 
     public void getAllDocument(CountDownTimer countDownTimer) {
-
+        countDownTimer.start();
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -56,7 +56,7 @@ public class SwipeService {
                                 User user = document.toObject(User.class);
                                 users.put(uid, user);
                             }
-                            userList =users; //TODO: co the bi bug
+                            userList = users; //TODO: co the bi bug
                             countDownTimer.onFinish();
                             countDownTimer.cancel();
                         } else {
@@ -113,9 +113,9 @@ public class SwipeService {
     }
 
     private boolean isGenderIWant(User anotherUser){
-        if (currentUser.getShowMeGender().equals("Everyone")) {
+        if (currentUser.getShowMeGender().equalsIgnoreCase("Everyone")) {
             return true;
-        }else return currentUser.getShowMeGender().equals(anotherUser.getGender());
+        }else return currentUser.getShowMeGender().equalsIgnoreCase(anotherUser.getGender());
     }
 
     private boolean isAgeIWant(User anotherUser){

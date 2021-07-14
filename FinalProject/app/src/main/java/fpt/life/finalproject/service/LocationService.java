@@ -16,12 +16,17 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,7 +75,19 @@ public class LocationService {
     public void getLastKnownLocation() {
         if (hasLocationPermission()) {
             if (isProviderEnabled()) {
-                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                fusedLocationProviderClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+                    @Override
+                    public boolean isCancellationRequested() {
+                        return false;
+                    }
+
+                    @NonNull
+                    @NotNull
+                    @Override
+                    public CancellationToken onCanceledRequested(@NonNull @NotNull OnTokenCanceledListener onTokenCanceledListener) {
+                        return null;
+                    }
+                }).addOnCompleteListener(task -> {
                     Location location = task.getResult();
                     Log.d("CheckLocation", "getLastKnownLocation: " + location.getLatitude() + " - " + location.getLongitude());
                     updateLocation(location);

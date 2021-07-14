@@ -30,6 +30,7 @@ public class User {
     private String city;
     private Map<String, Integer> rangeAge = new HashMap<>();
     private int rangeDistance;
+    private boolean onlineStatus;
 
     private ArrayList<String> userLiked;
     private ArrayList<String> userDisliked;

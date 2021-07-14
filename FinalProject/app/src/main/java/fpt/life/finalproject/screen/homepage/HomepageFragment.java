@@ -43,12 +43,11 @@ public class HomepageFragment extends Fragment {
     private SwipeService swipeService;
 
     private String currentUserId;
-    private Button refreshButton;
     private ImageView infoButton;
     private CardStackLayoutManager cardManager;
     private HomePageCardStackAdapter cardAdapter;
     private CardStackView cardStackView;
-    private CircleButton likeButton, nopeButton;
+    private CircleButton likeButton, nopeButton, refreshButton;
     private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
 
@@ -147,7 +146,6 @@ public class HomepageFragment extends Fragment {
         //get bundle current user id
         currentUserId = getArguments().getString("currentUserId");
 
-
         loadingProfile(root);
 
     }
@@ -166,6 +164,8 @@ public class HomepageFragment extends Fragment {
         locationService.getLastKnownLocation();
 
         loadProgressDialog();
+        swipeService.setUserList(null);
+        //khoi tao countdown
         countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -175,31 +175,17 @@ public class HomepageFragment extends Fragment {
             @Override
             public void onFinish() {
                 if (swipeService.getUserList() == null) {
-                    progressDialog.dismiss();
-                    Log.d("pro1", "timeout");
+                    countDownTimer.start();
                 } else {
                     swipeService.loadProfiles(currentUserId);
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();
-                    moreTimeToDismissDialog(progressDialog, 1000);
+                    progressDialog.dismiss();
                 }
             }
-        }.start();
+        };
+
         swipeService.getAllDocument(countDownTimer);
-    }
-
-    private void moreTimeToDismissDialog(ProgressDialog progressDialog, int time) {
-        CountDownTimer countDownTimer = new CountDownTimer(time, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                progressDialog.dismiss();
-            }
-        }.start();
     }
 
     private void loadProgressDialog() {

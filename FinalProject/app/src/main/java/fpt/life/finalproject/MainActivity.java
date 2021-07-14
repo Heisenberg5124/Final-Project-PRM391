@@ -23,6 +23,7 @@ import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
 import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.StatusService;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView matchedImageView;
     private ImageView logoImageView;
     private User currentUser;
+    private StatusService statusService;
 
     private MyProfileFragment myProfileFragment;
     private MatchedFragment matchedFragment;
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findView();
-        loadProgressDialog();
+        statusService = new StatusService();
+        statusService.listenStatus();
+//        loadProgressDialog();
         getCurrentUser(FirebaseAuth.getInstance().getUid());
 
         profileImageView.setOnClickListener(view -> {
@@ -88,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         sendDataToHomePage();
         sendDataToMatched();
         sendDataToMyProfile();
-        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)
@@ -111,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                         currentUser = task.getResult().toObject(User.class);
-                        progressDialog.dismiss();
+//                        progressDialog.dismiss();
 
                         initFragment();
                     }
@@ -149,5 +152,17 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    protected void onResume() {
+        statusService.upDateStatus(true);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        statusService.upDateStatus(false);
+        super.onPause();
     }
 }
