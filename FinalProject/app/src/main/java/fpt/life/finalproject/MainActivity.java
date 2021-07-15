@@ -1,7 +1,6 @@
 package fpt.life.finalproject;
 
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -23,17 +22,18 @@ import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
 import fpt.life.finalproject.service.LocationService;
-import fpt.life.finalproject.service.StatusService;
+import fpt.life.finalproject.service.OnChangeService;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
 
+    final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
     private LocationService locationService;
     private ImageView profileImageView;
     private ImageView matchedImageView;
     private ImageView logoImageView;
     private User currentUser;
-    private StatusService statusService;
+    private OnChangeService onChangeService;
 
     private MyProfileFragment myProfileFragment;
     private MatchedFragment matchedFragment;
@@ -46,8 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findView();
-        statusService = new StatusService();
-        statusService.listenStatus();
+        onChangeService = new OnChangeService();
+        onChangeService.listenUsersOnChange(CHECK_ONLINE_STATUS_TASK);
+        onChangeService.listenMatchedUsersOnChange();
 //        loadProgressDialog();
         getCurrentUser(FirebaseAuth.getInstance().getUid());
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.frame_layout_main_fragment, myProfileFragment)
                     .commit();
             profileImageView.setColorFilter(Color.rgb(253, 76, 103));
-            matchedImageView.setColorFilter(Color.rgb(87, 87, 87));
+            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
         });
 
         matchedImageView.setOnClickListener(view -> {
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, matchedFragment)
                     .commit();
-            profileImageView.setColorFilter(Color.rgb(87, 87, 87));
+            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
             matchedImageView.setColorFilter(Color.rgb(253, 76, 103));
         });
 
@@ -74,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, homepageFragment)
                     .commit();
-            profileImageView.setColorFilter(Color.rgb(87, 87, 87));
-            matchedImageView.setColorFilter(Color.rgb(87, 87, 87));
+            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
+            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
         });
     }
 
@@ -156,13 +157,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        statusService.upDateStatus(true);
+        onChangeService.upDateStatus(true);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        statusService.upDateStatus(false);
+        onChangeService.upDateStatus(false);
         super.onPause();
     }
 }

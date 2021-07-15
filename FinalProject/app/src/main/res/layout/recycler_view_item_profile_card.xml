@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#4D757272"
+        android:background="@drawable/background_information_layout"
         android:paddingStart="16dp"
         android:paddingTop="5dp"
         android:paddingEnd="16dp"

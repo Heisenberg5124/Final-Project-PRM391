@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 
 public class MatchedProfile {
-    private String uid;
+    private String otherUid;
     private String name;
     private String photoImageUrl;
     private String lastMessage;

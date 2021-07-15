@@ -7,12 +7,16 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -102,6 +106,7 @@ public class SwipeService {
     private boolean checkValidUser(User anotherUser) {
         return !isDuplicateCurrentId(anotherUser)
                 && isGenderIWant(anotherUser)
+                && isGenderTheyWant(anotherUser)
                 && isAgeIWant(anotherUser)
                 && isInDistanceIWant (anotherUser)
                 && !isInLikedList(anotherUser)
@@ -116,6 +121,12 @@ public class SwipeService {
         if (currentUser.getShowMeGender().equalsIgnoreCase("Everyone")) {
             return true;
         }else return currentUser.getShowMeGender().equalsIgnoreCase(anotherUser.getGender());
+    }
+
+    private boolean isGenderTheyWant(User anotherUser) {
+        if (anotherUser.getShowMeGender().equalsIgnoreCase("Everyone")) {
+            return true;
+        }else return anotherUser.getShowMeGender().equalsIgnoreCase(currentUser.getGender());
     }
 
     private boolean isAgeIWant(User anotherUser){
@@ -160,6 +171,7 @@ public class SwipeService {
     public void swipeRight() {
         currentUser.getUserLiked().add(homePageProfileList.get(0).getUid());
         updateOnSwipe("userLiked", currentUser.getUserLiked());
+        checkMatch(homePageProfileList.get(0).getUid());
         homePageProfileList.remove(0);
     }
 
@@ -168,6 +180,42 @@ public class SwipeService {
         updateOnSwipe("userDisliked", currentUser.getUserDisliked());
         homePageProfileList.remove(0);
     }
+
+    private void checkMatch(String otherLikedUserUid) {
+        User otherLikedUser = userList.get(otherLikedUserUid);
+        if (otherLikedUser != null){
+            if (otherLikedUser.getUserLiked().contains(currentUser.getUid())){
+                createMatchedUser(otherLikedUserUid);
+            }
+        }
+    }
+
+    private void createMatchedUser(String otherLikedUserUid) {
+        Map<String, Object> matchedUserData = new HashMap<>();
+        ArrayList<String> userMatchedList = new ArrayList<>();
+        userMatchedList.add(currentUser.getUid());
+        userMatchedList.add(otherLikedUserUid);
+        matchedUserData.put("lastMessage","0000");
+        matchedUserData.put("sender", userMatchedList);
+        CollectionReference matchedUserReference = db.collection("matched_users");
+        DocumentReference coupleReference = matchedUserReference.document(currentUser.getUid()+"_"+otherLikedUserUid);
+        coupleReference.collection("messages")
+                .document("0000")
+                .set(new HashMap<>())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                        coupleReference.set(matchedUserData)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                        Log.d("checkMatched", currentUser.getUid()+"_"+otherLikedUserUid);
+                                    }
+                                });
+                    }
+                });
+    }
+
 
     private void updateOnSwipe(String field, List<String> list) {
         DocumentReference currentUserRef = db.collection("users").document(currentUser.getUid());
