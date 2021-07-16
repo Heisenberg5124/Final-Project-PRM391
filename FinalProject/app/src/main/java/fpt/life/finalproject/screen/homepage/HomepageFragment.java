@@ -2,28 +2,18 @@ package fpt.life.finalproject.screen.homepage;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
 import com.yuyakaido.android.cardstackview.CardStackView;
@@ -38,9 +28,6 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
 import fpt.life.finalproject.adapter.InformationHomePageClickedListener;
 import fpt.life.finalproject.dto.HomePageProfile;
-import fpt.life.finalproject.model.User;
-import fpt.life.finalproject.screen.Login.Login_Activity;
-import fpt.life.finalproject.screen.register.ui.RegisterActivity;
 import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.OnChangeService;
@@ -48,13 +35,10 @@ import fpt.life.finalproject.service.SwipeService;
 
 public class HomepageFragment extends Fragment implements InformationHomePageClickedListener {
 
-    private static final String CHECK_UPDATE_DATA_TASK = "CHECK_UPDATE_DATA_TASK";
     private SwipeService swipeService;
     private OnChangeService onChangeService;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String currentUserId = FirebaseAuth.getInstance().getUid();
-    private ImageView infoButton;
+    private final String currentUserId = FirebaseAuth.getInstance().getUid();
     private CardStackLayoutManager cardManager;
     private HomePageCardStackAdapter cardAdapter;
     private CardStackView cardStackView;
@@ -133,28 +117,13 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         cardStackView.setItemAnimator(new DefaultItemAnimator());
         //like button
         likeButton = root.findViewById(R.id.like_btn);
-        likeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoLike();
-            }
-        });
+        likeButton.setOnClickListener(v -> autoLike());
         //nope button
         nopeButton = root.findViewById(R.id.nope_btn);
-        nopeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoNope();
-            }
-        });
+        nopeButton.setOnClickListener(v -> autoNope());
         //refresh button
         refreshButton = root.findViewById(R.id.refresh_btn);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingProfile(root);
-            }
-        });
+        refreshButton.setOnClickListener(v -> loadingProfile(root));
 
         loadingProfile(root);
 
