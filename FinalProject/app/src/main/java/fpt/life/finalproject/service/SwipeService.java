@@ -1,10 +1,12 @@
 package fpt.life.finalproject.service;
 
 import android.location.Location;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import fpt.life.finalproject.dto.HomePageProfile;
 import fpt.life.finalproject.model.User;
@@ -37,7 +40,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class SwipeService {
-    private Map<String, User> userList;
+    private TreeMap<String, User> userList;
     private List<HomePageProfile> homePageProfileList = new ArrayList<>();
     private User currentUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -53,7 +56,7 @@ public class SwipeService {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Map<String, User> users = new HashMap<>();
+                        TreeMap<String, User> users = new TreeMap<>();
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String uid = document.getId();
@@ -71,14 +74,22 @@ public class SwipeService {
                 });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void updateUserlist(String key, User value){
+        userList.replace(key, value);
+    }
+
+    public void addItemUserlist(String key, User value){
+        userList.put(key,value);
+    }
+
     public void loadProfiles(String currentUserId){
-//        getCurrentUser("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
         getCurrentUser(currentUserId);
-        homePageProfileList.clear();
         filterProfiles();
     }
 
     public void filterProfiles() {
+        homePageProfileList.clear();
         List<HomePageProfile> homePageProfileList = new ArrayList<>();
         Log.d("size", userList.size()+"");
         for (Map.Entry<String, User> entry : userList.entrySet()) {
@@ -196,6 +207,7 @@ public class SwipeService {
         userMatchedList.add(currentUser.getUid());
         userMatchedList.add(otherLikedUserUid);
         matchedUserData.put("lastMessage","0000");
+        matchedUserData.put("isKnow",false);
         matchedUserData.put("sender", userMatchedList);
         CollectionReference matchedUserReference = db.collection("matched_users");
         DocumentReference coupleReference = matchedUserReference.document(currentUser.getUid()+"_"+otherLikedUserUid);

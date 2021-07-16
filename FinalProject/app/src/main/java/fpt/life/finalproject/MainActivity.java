@@ -27,7 +27,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
+//    final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
     private LocationService locationService;
     private ImageView profileImageView;
     private ImageView matchedImageView;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findView();
         onChangeService = new OnChangeService();
-        onChangeService.listenUsersOnChange(CHECK_ONLINE_STATUS_TASK);
+        onChangeService.listenOnlineUsersOnChange();
         onChangeService.listenMatchedUsersOnChange();
 //        loadProgressDialog();
         getCurrentUser(FirebaseAuth.getInstance().getUid());

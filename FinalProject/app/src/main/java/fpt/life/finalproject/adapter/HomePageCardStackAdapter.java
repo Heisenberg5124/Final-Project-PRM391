@@ -1,5 +1,7 @@
 package fpt.life.finalproject.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,21 +11,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.HomePageProfile;
+import fpt.life.finalproject.screen.Login.Login_Activity;
+import fpt.life.finalproject.screen.register.ui.RegisterActivity;
 
 public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardStackAdapter.ViewHolder> {
 
     private List<HomePageProfile> homePageProfileList;
+    private InformationHomePageClickedListener informationHomePageClickedListener;
 
-    public HomePageCardStackAdapter(List<HomePageProfile> homePageProfileList) {
+    public HomePageCardStackAdapter(List<HomePageProfile> homePageProfileList,
+                                    InformationHomePageClickedListener informationHomePageClickedListener ) {
         this.homePageProfileList = homePageProfileList;
+        this.informationHomePageClickedListener = informationHomePageClickedListener;
     }
 
     @NonNull
@@ -73,8 +83,7 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
             infoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("dm", data.getUid());
-                    //TODO: infoActivity();
+                    informationHomePageClickedListener.onInformationHomePageClickListener(data.getUid());
                 }
             });
         }

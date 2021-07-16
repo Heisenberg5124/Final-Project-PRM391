@@ -1,8 +1,7 @@
 package fpt.life.finalproject.screen.homepage;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,14 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
 import com.yuyakaido.android.cardstackview.CardStackView;
@@ -31,18 +36,24 @@ import java.util.List;
 import at.markushi.ui.CircleButton;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
+import fpt.life.finalproject.adapter.InformationHomePageClickedListener;
 import fpt.life.finalproject.dto.HomePageProfile;
+import fpt.life.finalproject.model.User;
+import fpt.life.finalproject.screen.Login.Login_Activity;
+import fpt.life.finalproject.screen.register.ui.RegisterActivity;
+import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.OnChangeService;
 import fpt.life.finalproject.service.SwipeService;
 
-public class HomepageFragment extends Fragment {
+public class HomepageFragment extends Fragment implements InformationHomePageClickedListener {
 
-//    private Map<String, User> userList;
-//    private List<HomePageProfile> homePageProfileList = new ArrayList<>();
-//    private User currentUser;
+    private static final String CHECK_UPDATE_DATA_TASK = "CHECK_UPDATE_DATA_TASK";
     private SwipeService swipeService;
+    private OnChangeService onChangeService;
 
-    private String currentUserId;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String currentUserId = FirebaseAuth.getInstance().getUid();
     private ImageView infoButton;
     private CardStackLayoutManager cardManager;
     private HomePageCardStackAdapter cardAdapter;
@@ -67,6 +78,8 @@ public class HomepageFragment extends Fragment {
 
     private void init(View root) {
         swipeService = new SwipeService();
+        onChangeService = new OnChangeService();
+
         cardStackView = root.findViewById(R.id.homepage_view_card_stack);
         cardManager = new CardStackLayoutManager(this.getContext(), new CardStackListener() {
             @Override
@@ -114,7 +127,7 @@ public class HomepageFragment extends Fragment {
         cardManager.setDirections(Direction.HORIZONTAL);
         cardManager.setCanScrollHorizontal(true);
         cardManager.setCanScrollVertical(false);
-        cardAdapter = new HomePageCardStackAdapter(swipeService.getHomePageProfileList());
+        cardAdapter = new HomePageCardStackAdapter(swipeService.getHomePageProfileList(),this);
         cardStackView.setLayoutManager(cardManager);
         cardStackView.setAdapter(cardAdapter);
         cardStackView.setItemAnimator(new DefaultItemAnimator());
@@ -142,9 +155,6 @@ public class HomepageFragment extends Fragment {
                 loadingProfile(root);
             }
         });
-
-        //get bundle current user id
-        currentUserId = getArguments().getString("currentUserId");
 
         loadingProfile(root);
 
@@ -178,13 +188,13 @@ public class HomepageFragment extends Fragment {
                     countDownTimer.start();
                 } else {
                     swipeService.loadProfiles(currentUserId);
+                    onChangeService.listenDataUsersOnChange(swipeService,cardAdapter);
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();
                     progressDialog.dismiss();
                 }
             }
         };
-
         swipeService.getAllDocument(countDownTimer);
     }
 
@@ -216,4 +226,10 @@ public class HomepageFragment extends Fragment {
         cardStackView.swipe();
     }
 
+    @Override
+    public void onInformationHomePageClickListener(String otherUid) {
+        Intent i = new Intent(getContext(), ViewOtherProfile_Activity.class);
+        i.putExtra("otherUid",otherUid);
+        startActivity(i);
+    }
 }
