@@ -1,49 +1,61 @@
 package fpt.life.finalproject.service;
 
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 import fpt.life.finalproject.MainActivity;
+import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
-import fpt.life.finalproject.dto.MatchedProfile;
 import fpt.life.finalproject.model.User;
 
 public class OnChangeService {
 
     private static final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
     private static final String CHECK_UPDATE_DATA_TASK = "CHECK_UPDATE_DATA_TASK";
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final String CHANNEL_ID = "Channel_1";
+    private static final String DEFAULT_ID_LAST_MESSAGE = "0000";
+    private static final String currentUserUid = FirebaseAuth.getInstance().getUid();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
+    private Activity activity;
+
+    public OnChangeService(Activity activity) {
+        this.activity = activity;
+    }
+
+    public OnChangeService() {
+    }
 
     public void upDateStatus(boolean status) {
-        documentReference = db.collection("users").document(FirebaseAuth.getInstance().getUid());
+        documentReference = db.collection("users").document(currentUserUid);
         documentReference.update("onlineStatus", status);
         if (!status) {
             Timestamp timeStamp = Timestamp.now();
@@ -51,8 +63,9 @@ public class OnChangeService {
         }
     }
 
-    public void listenMatchedUsersOnChange() {
-        db.collection("matched_users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+    public void listenMatchedUsersNotify() {
+        db.collection("matched_users").whereEqualTo("isNotify",false)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException error) {
@@ -60,12 +73,15 @@ public class OnChangeService {
                     Log.d("checkOnline", error + "");
                     return;
                 }
-
                 for (DocumentChange dc : value.getDocumentChanges()) {
+                    Log.d("checkSnapshot", dc.getType().toString());
                     switch (dc.getType()) {
                         case ADDED:
-                            if (dc.getDocument().getId().contains(FirebaseAuth.getInstance().getUid())) {
+                            if (dc.getDocument().getId().contains(currentUserUid)) {
+                                String matchedUid = dc.getDocument().getId();
                                 notifyMatch();
+                                listenMatchedUsersIsKnown();
+                                updateIsNotify(matchedUid,"isNotify",true);
                             }
                             break;
                     }
@@ -74,8 +90,85 @@ public class OnChangeService {
         });
     }
 
+    private void updateIsNotify(String documentUID,String field, boolean data) {
+        db.collection("matched_users").document(documentUID)
+                .update(field, data);
+    }
+
+    public void listenMatchedUsersIsKnown() {
+        db.collection("matched_users").whereEqualTo("isKnown."+currentUserUid,false)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    if (task.getResult().size()>0){
+                        ((MainActivity)activity).setNotifyCircleVisibility(true);
+                    }else {
+                        listenChatIsSeen();
+                    }
+                }
+            }
+        });
+    }
+
+    private void listenChatIsSeen() {
+        db.collection("matched_users")
+                .whereEqualTo("isKnown."+currentUserUid,true)
+                .whereEqualTo("lastMessage.isSeen",true)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    if (task.getResult().size()>0){
+                        ((MainActivity)activity).setNotifyCircleVisibility(true);
+                    }else {
+                        ((MainActivity)activity).setNotifyCircleVisibility(false);
+                    }
+                }
+            }
+        });
+    }
+
+    public void updateMatchedUserIsKnown(){
+        db.collection("matched_users")
+                .whereEqualTo("isKnown."+currentUserUid,false)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot dc : task.getResult()){
+                        db.collection("matched_users").document(dc.getId())
+                                .update("isKnown."+currentUserUid, true);
+                    }
+                    listenMatchedUsersIsKnown();
+                }
+            }
+        });
+    }
+
     private void notifyMatch() {
-        Log.d("checkMatched", "You have new matched");
+        NotificationManager notificationManager = (NotificationManager) activity
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Matched Channel";
+            String description = "This is Matched Channel";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            notificationManager = activity.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+//        Bitmap bitmapLogo = BitmapFactory.decodeResource(context.getResources(),R.drawable.logo);
+        Notification builder = new NotificationCompat.Builder(activity, CHANNEL_ID)
+                .setContentTitle("New Matched!")
+                .setContentText("Ting Ting! You have new matched. Let's see who it is!")
+                .setSmallIcon(R.drawable.logo)
+                .build();
+        if (notificationManager !=null){
+            int random = (int)new Date().getTime();
+            notificationManager.notify(random,builder);
+        }
+        Log.d("checkMatched", "Ting Ting! You have new matched. Let's see who it is!");
     }
 
     public void listenDataUsersOnChange(SwipeService swipeService, HomePageCardStackAdapter cardAdapter) {
@@ -89,6 +182,7 @@ public class OnChangeService {
                     return;
                 }
                 for (DocumentChange dc : value.getDocumentChanges()) {
+                    Log.d("checkSnapshot", dc.getType().toString());
                     User user = dc.getDocument().toObject(User.class);
                     switch (dc.getType()) {
                         case MODIFIED:
@@ -101,6 +195,7 @@ public class OnChangeService {
                             swipeService.addItemUserlist(user.getUid(),user);
                             swipeService.filterProfiles();
                             cardAdapter.notifyDataSetChanged();
+//                            Log.d("checkDataChange:", user.getName());
                             break;
                     }
                 }
@@ -129,9 +224,15 @@ public class OnChangeService {
         });
     }
 
-
     private void checkOnlineStatus(User user) {
         Log.d("checkOnline", user.getUid() + ": " + user.isOnlineStatus());
+    }
+
+    private void unmatch(String otherUid){
+        String matchedUid = currentUserUid.compareTo(otherUid) <= 0
+                ? currentUserUid + "_" + otherUid
+                : otherUid + "_" + currentUserUid;
+        db.collection("matched_users").document(matchedUid).delete();
     }
 
 }

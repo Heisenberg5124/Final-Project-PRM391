@@ -67,6 +67,8 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:text="name text"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@android:color/white"
             android:textSize="26sp"
             android:textStyle="bold"

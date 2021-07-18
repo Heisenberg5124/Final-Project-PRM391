@@ -1,8 +1,9 @@
 package fpt.life.finalproject;
 
-import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -21,37 +22,35 @@ import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
-import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.OnChangeService;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
 
 //    final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
-    private LocationService locationService;
     private ImageView profileImageView;
     private ImageView matchedImageView;
     private ImageView logoImageView;
+    private ImageView notifyCircleImageView;
     private User currentUser;
     private OnChangeService onChangeService;
 
     private MyProfileFragment myProfileFragment;
     private MatchedFragment matchedFragment;
     private HomepageFragment homepageFragment;
-    private ProgressDialog progressDialog;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findView();
-        onChangeService = new OnChangeService();
+        onChangeService = new OnChangeService(this);
         onChangeService.listenOnlineUsersOnChange();
-        onChangeService.listenMatchedUsersOnChange();
+        onChangeService.listenMatchedUsersNotify();
+        onChangeService.listenMatchedUsersIsKnown();
 //        loadProgressDialog();
-        getCurrentUser(FirebaseAuth.getInstance().getUid());
-
+        getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         matchedImageView.setOnClickListener(view -> {
+            onChangeService.updateMatchedUserIsKnown();
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, matchedFragment)
@@ -80,10 +80,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void findView() {
         profileImageView = findViewById(R.id.image_view_profile);
         matchedImageView = findViewById(R.id.image_view_matched);
         logoImageView = findViewById(R.id.image_view_logo);
+        notifyCircleImageView = findViewById(R.id.image_view_notify_circle);
     }
 
     private void initFragment() {
@@ -99,25 +102,21 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    private void loadProgressDialog() {
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_dialog);
-        progressDialog.setCancelable(false);
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    public User getCurrentUser() {
+        return currentUser;
     }
 
-    public void getCurrentUser(String currentUserId) {
+    public void getCurrentUserFromDatabase(String currentUserId) {
 
         db.collection("users").document(currentUserId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
-                        currentUser = task.getResult().toObject(User.class);
-//                        progressDialog.dismiss();
-
-                        initFragment();
+                        if (task.isSuccessful()){
+                            currentUser = task.getResult().toObject(User.class);
+                            initFragment();
+                        }
                     }
                 });
     }
@@ -165,5 +164,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         onChangeService.upDateStatus(false);
         super.onPause();
+    }
+
+    public void setNotifyCircleVisibility(boolean isNotify) {
+        int visibility = isNotify ? View.VISIBLE : View.GONE;
+        notifyCircleImageView.setVisibility(visibility);
     }
 }

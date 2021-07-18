@@ -24,10 +24,12 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.List;
 
 import at.markushi.ui.CircleButton;
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
 import fpt.life.finalproject.adapter.InformationHomePageClickedListener;
 import fpt.life.finalproject.dto.HomePageProfile;
+import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.OnChangeService;
@@ -38,7 +40,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     private SwipeService swipeService;
     private OnChangeService onChangeService;
 
-    private final String currentUserId = FirebaseAuth.getInstance().getUid();
+    private User currentUser;
     private CardStackLayoutManager cardManager;
     private HomePageCardStackAdapter cardAdapter;
     private CardStackView cardStackView;
@@ -61,9 +63,9 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     }
 
     private void init(View root) {
-        swipeService = new SwipeService();
+        currentUser = ((MainActivity)getActivity()).getCurrentUser();
+        swipeService = new SwipeService(currentUser);
         onChangeService = new OnChangeService();
-
         cardStackView = root.findViewById(R.id.homepage_view_card_stack);
         cardManager = new CardStackLayoutManager(this.getContext(), new CardStackListener() {
             @Override
@@ -156,7 +158,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
                 if (swipeService.getUserList() == null) {
                     countDownTimer.start();
                 } else {
-                    swipeService.loadProfiles(currentUserId);
+                    swipeService.loadProfiles();
                     onChangeService.listenDataUsersOnChange(swipeService,cardAdapter);
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();
