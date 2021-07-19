@@ -77,6 +77,7 @@ public class RegisterService {
                 .build();
         Log.d("SaveUser", "onSaveUser: " + user.getUid());
 
+        //TODO: add empty 'matched_users' collection to document
         collectionReference.document(user.getUid()).set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

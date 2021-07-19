@@ -35,17 +35,15 @@ public class PhotoAdapter extends RecyclerView.Adapter implements ItemTouchHelpe
 
     private ArrayList<Photo> photos;
     private FragmentActivity fragmentActivity;
-    private PhotoElementClickedListener photoElementClickedListener;
     private OnStartDragListener onStartDragListener;
     private RecyclerItemSelectedListener recyclerItemSelectedListener;
     private Button buttonDone;
 
     private int height;
 
-    public PhotoAdapter(ArrayList<Photo> photos, FragmentActivity fragmentActivity, PhotoElementClickedListener photoElementClickedListener, OnStartDragListener onStartDragListener, RecyclerItemSelectedListener recyclerItemSelectedListener, Button buttonDone) {
+    public PhotoAdapter(ArrayList<Photo> photos, FragmentActivity fragmentActivity, OnStartDragListener onStartDragListener, RecyclerItemSelectedListener recyclerItemSelectedListener, Button buttonDone) {
         this.photos = photos;
         this.fragmentActivity = fragmentActivity;
-        this.photoElementClickedListener = photoElementClickedListener;
         this.onStartDragListener = onStartDragListener;
         this.recyclerItemSelectedListener = recyclerItemSelectedListener;
         this.buttonDone = buttonDone;
@@ -99,8 +97,6 @@ public class PhotoAdapter extends RecyclerView.Adapter implements ItemTouchHelpe
 
             imageViewDelete.setOnClickListener(v -> removePhoto(photo));
 
-            imageViewPhoto.setOnClickListener(v -> photoElementClickedListener.onPhotoClickListener(position));
-
             Glide.with(fragmentActivity)
                     .load(photo.getPhotoUri())
                     .centerCrop()
@@ -135,10 +131,16 @@ public class PhotoAdapter extends RecyclerView.Adapter implements ItemTouchHelpe
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Log.d("CheckPhotoMove", photos.toString() + " " + fromPosition + " " + toPosition);
-        Collections.swap(photos, fromPosition, toPosition);
+        movePhoto(fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         Log.d("CheckPhotoMove", photos.toString() + " " + fromPosition + " " + toPosition);
         return true;
+    }
+
+    private void movePhoto(int fromPosition, int toPosition) {
+        Photo photo = photos.get(fromPosition);
+        photos.remove(fromPosition);
+        photos.add(toPosition, photo);
     }
 
     @Override

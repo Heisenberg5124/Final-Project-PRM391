@@ -1,9 +1,6 @@
 package fpt.life.finalproject.screen.homepage;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;

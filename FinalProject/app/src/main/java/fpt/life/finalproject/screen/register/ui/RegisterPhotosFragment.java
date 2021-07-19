@@ -24,16 +24,14 @@ import java.util.ArrayList;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.PhotoAdapter;
-import fpt.life.finalproject.adapter.PhotoElementClickedListener;
 import fpt.life.finalproject.adapter.RecyclerItemSelectedListener;
 import fpt.life.finalproject.adapter.drapdrop.ItemTouchHelperCallBack;
 import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.Photo;
-import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.RegisterService;
 import fpt.life.finalproject.util.ButtonUtil;
 
-public class RegisterPhotosFragment extends Fragment implements PhotoElementClickedListener, RecyclerItemSelectedListener {
+public class RegisterPhotosFragment extends Fragment implements RecyclerItemSelectedListener {
 
     private static final int MAX_NUM_OF_PHOTOS = 9;
     private static final int NUM_OF_COLUMNS = 3;
@@ -119,7 +117,7 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
     }
 
     private void initRecyclerView() {
-        photoAdapter = new PhotoAdapter(photos, getActivity(), this, viewHolder -> {
+        photoAdapter = new PhotoAdapter(photos, getActivity(), viewHolder -> {
             itemTouchHelper.startDrag(viewHolder);
         }, this, buttonDone);
 
@@ -145,11 +143,6 @@ public class RegisterPhotosFragment extends Fragment implements PhotoElementClic
                     .build();
             photos.add(photo);
         }
-    }
-
-    @Override
-    public void onPhotoClickListener(int position) {
-        onPlusClick(position);
     }
 
     @Override
