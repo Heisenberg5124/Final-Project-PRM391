@@ -22,6 +22,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -150,7 +152,7 @@ public class ChatService {
                                             .build();
                                     message.setSendTimeShow(TimestampUtil.getSendTime(message.getSendTime()));
                                     messages.add(message);
-                                    seenAllMessages();
+
                                     Log.d("Seen", "setSeenStatus: " + message.getMessageUid() + " _ " + message.isSeen());
                                     break;
                                 case MODIFIED:
@@ -160,9 +162,8 @@ public class ChatService {
                                     }
                                     break;
                             }
-
                         }
-                        firebaseListener.onCompleteLoadMessages(chatRoom);
+                        seenAllMessages();
                     }
                 });
     }
@@ -170,13 +171,19 @@ public class ChatService {
     private void seenAllMessages() {
         firebaseFirestore.collection("matched_users").document(generateMatchedUid())
                 .collection("messages").whereEqualTo("sender", otherUid)
+                .whereEqualTo("isSeen",false)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                     firebaseFirestore.collection("matched_users").document(generateMatchedUid())
                             .collection("messages").document(documentSnapshot.getId())
-                            .update("isSeen", true);
+                            .update("isSeen", true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<Void> task) {
+                            firebaseListener.onCompleteLoadMessages(chatRoom);
+                        }
+                    });
                 }
             }
         });
