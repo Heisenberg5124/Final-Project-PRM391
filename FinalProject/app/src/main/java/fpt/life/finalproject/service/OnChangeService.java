@@ -205,7 +205,9 @@ public class OnChangeService {
     }
 
     public void listenOnlineUsersOnChange() {
-        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("users")
+                .whereArrayContains("likedList",currentUserUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException error) {
@@ -217,21 +219,10 @@ public class OnChangeService {
                     switch (dc.getType()) {
                         case MODIFIED:
                             User user = dc.getDocument().toObject(User.class);
-                            Log.d("checkvinhboi", dc.getDocument().getData().toString());
                             checkOnlineStatus(user);
                             break;
                     }
                 }
-            }
-        });
-
-        db.collection("matched_users")
-                .document("h4Omg5EVUZgUHyrisu1RP4JKB0P2_ivjzkRAKorZIR6zxaVazFrYtYE32")
-                .collection("messages")
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-                Log.d("checkvinhboii", task.getResult().size()+"");
             }
         });
     }
