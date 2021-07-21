@@ -13,23 +13,25 @@ import androidx.viewpager.widget.ViewPager;
 import com.squareup.picasso.Picasso;
 
 
+import java.util.ArrayList;
+
 import fpt.life.finalproject.R;
 
 public class FullSizeAdapter extends PagerAdapter {
 
     Context context;
-    String[] images;
+    ArrayList<String> images;
     LayoutInflater inflater;
 
 
-    public FullSizeAdapter(Context context, String[] images) {
+    public FullSizeAdapter(Context context, ArrayList<String> images) {
         this.context = context;
         this.images = images;
     }
 
     @Override
     public int getCount() {
-        return images.length;
+        return images.size();
     }
 
     @Override
@@ -46,7 +48,7 @@ public class FullSizeAdapter extends PagerAdapter {
         ImageView imageView = (ImageView) v.findViewById(R.id.image_full);
 
         Picasso.get()
-                .load(images[position])
+                .load(images.get(position))
                 .into(imageView);
 
         ViewPager vp = (ViewPager) container;

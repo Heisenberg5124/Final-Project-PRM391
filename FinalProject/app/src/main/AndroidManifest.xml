@@ -14,21 +14,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject">
-
-        <activity android:name=".screen.Login.Profile_Activity"></activity>
+        <activity android:name=".screen.viewOtherProfile.FullAva"></activity>
+        <activity android:name=".screen.Login.Profile_Activity" />
         <activity android:name=".screen.Login.Login_Activity">
-            <!--<intent-filter>
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity android:name=".MainActivity">
-            <!--<intent-filter>
+           <intent-filter>-->
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity android:name=".screen.viewOtherProfile.FullScreen" />
         <activity android:name=".screen.viewOtherProfile.ViewOtherProfile_Activity">
@@ -36,14 +37,15 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>-->
+            </intent-filter>-->
         </activity>
+        <activity android:name=".screen.myprofile.EditPhoto_Activity" />
         <activity android:name=".screen.register.ui.RegisterActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <meta-data
@@ -57,7 +59,8 @@
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
-            <intent-filter><action android:name="android.intent.action.VIEW" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

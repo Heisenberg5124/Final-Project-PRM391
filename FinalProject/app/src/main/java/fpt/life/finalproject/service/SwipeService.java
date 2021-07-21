@@ -68,7 +68,7 @@ public class SwipeService {
     }
 
     public void loadProfiles(){
-        getCurrentUser("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
+        getCurrentUser("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
         homePageProfileList.clear();
         filterProfiles();
     }
