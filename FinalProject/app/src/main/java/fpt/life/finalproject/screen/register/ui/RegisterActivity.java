@@ -13,10 +13,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.service.LocationService;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class RegisterActivity extends AppCompatActivity {
-
-    private final static int PERMISSION_LOCATION = 1000;
 
     private LocationService locationService;
 
@@ -46,10 +45,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationService.updateLocation();
-            }
-        }
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }

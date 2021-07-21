@@ -1,5 +1,6 @@
 package fpt.life.finalproject.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
@@ -33,4 +34,7 @@ public class User {
 
     private ArrayList<String> userLiked;
     private ArrayList<String> userDisliked;
+
+    private boolean onlineStatus;
+    private Timestamp lastTimeOnline;
 }
