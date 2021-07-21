@@ -13,4 +13,5 @@ public class Photo {
 
     private String photoUri;
     private boolean isEmpty;
+    private boolean isExistFireBase;
 }

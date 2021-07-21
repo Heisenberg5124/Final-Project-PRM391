@@ -23,6 +23,7 @@ public class MyProfile implements Parcelable {
     private String gender;
     private String showMeGender;
     private ArrayList<String> hobbies;
+    private ArrayList<String> imageList;
     private String avt;
 
     protected MyProfile(Parcel in) {

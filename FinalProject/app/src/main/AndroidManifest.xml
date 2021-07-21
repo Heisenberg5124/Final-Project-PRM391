@@ -15,13 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject">
-        <activity android:name=".screen.chat.ChatActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".screen.viewOtherProfile.FullAva"></activity>
         <activity android:name=".screen.Login.Profile_Activity" />
         <activity android:name=".screen.Login.Login_Activity">
             <!--<intent-filter>
@@ -31,29 +25,24 @@
             </intent-filter>-->
         </activity>
         <activity android:name=".MainActivity">
-
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".screen.viewOtherProfile.FullScreen" />
+        <activity android:name=".screen.viewOtherProfile.ViewOtherProfile_Activity">
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+        </intent-filter>-->
         </activity>
-        <activity android:name=".screen.viewOtherProfile.FullScreen" />
-        <activity android:name=".screen.viewOtherProfile.ViewOtherProfile_Activity">
-
-            <!--
-        <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-            -->
-        </activity>
+        <activity android:name=".screen.myprofile.EditPhoto_Activity" />
         <activity android:name=".screen.register.ui.RegisterActivity">
 
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>

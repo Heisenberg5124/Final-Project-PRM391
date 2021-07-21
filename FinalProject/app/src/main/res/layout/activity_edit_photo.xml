@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".screen.myprofile.EditPhoto_Activity">
+
+
+        <TextView
+            android:id="@+id/text_view_edit_photos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Photos"
+            android:textSize="36sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/text_view_edit_photos_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="The first photo is your avatar\nDrag &amp; Drop to reorder"
+        android:textAlignment="center"
+        android:textColor="#9F9F9F"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_view_edit_photos"
+        app:layout_constraintStart_toStartOf="@+id/text_view_edit_photos"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_edit_photos" />
+
+
+    <Button
+        android:id="@+id/button_edit_done"
+        android:layout_width="270dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/background_button_clicked"
+        android:enabled="true"
+        android:text="DONE"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_edit_photos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_edit_done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_edit_photos_description" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
