@@ -1,9 +1,16 @@
 package fpt.life.finalproject.service;
 
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,10 +20,14 @@ import java.util.Date;
 import lombok.SneakyThrows;
 
 public class MyProfileService {
-    String userID = "Z7sJqYLoCbhxGPU8dzX4VXehaZe2";
+    private String userID;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference docRef;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DocumentReference docRef = db.collection("users").document(userID);
+    public MyProfileService(String userID) {
+        this.userID = userID;
+        docRef = db.collection("users").document(userID);
+    }
 
     //Update data to a field in firebase
     public void updateField(String field, String data) {

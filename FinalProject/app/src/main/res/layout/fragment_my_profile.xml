@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screen.myprofile.MyProfileFragment">
+    tools:context=".screen.myprofile.MyProfileFragment"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+            android:id="@+id/cardView_avt_myprofile"
             android:layout_width="160dp"
             android:layout_height="160dp"
             android:layout_marginTop="10dp"
@@ -30,25 +32,24 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardViewBtnImages"
+            android:id="@+id/cardView_photos_myprofile"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:cardBackgroundColor="#D5D3D3"
-            app:cardCornerRadius="200dp"
-            app:layout_constraintBottom_toBottomOf="@+id/cardView"
-            app:layout_constraintStart_toEndOf="@+id/cardView">
+            android:layout_marginStart="30dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="250dp"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView_avt_myprofile"
+            app:layout_constraintStart_toEndOf="@+id/cardView_avt_myprofile">
 
             <Button
                 android:id="@+id/btn_edit_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/icon_images"
-                android:scaleType="centerInside"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/ic_icon_images"
                 app:backgroundTint="#14142B" />
         </androidx.cardview.widget.CardView>
-
         <ScrollView
             android:id="@+id/scrollview_information_myprofile"
             android:layout_width="match_parent"
@@ -60,7 +61,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:layout_constraintTop_toBottomOf="@+id/cardView_avt_myprofile"
             app:layout_constraintVertical_weight="1">
 
             <LinearLayout
@@ -79,7 +80,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
+                    android:background="@drawable/background_my_profile_container"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -91,7 +92,46 @@
                         android:paddingRight="10dp">
 
                         <TextView
-                            android:id="@+id/textView5"
+                            android:id="@+id/txtName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Name"
+                            android:textColor="#000000"
+                            android:textSize="24sp" />
+
+                        <EditText
+                            android:id="@+id/eTxtName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:maxLength="20"
+                            android:ems="10"
+                            android:gravity="right"
+                            android:inputType="textPersonName"
+                            android:textSize="24sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="#c0c0c0" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp">
+
+                        <TextView
+                            android:id="@+id/txtBirthday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Birthday"
@@ -106,7 +146,8 @@
                             android:ems="10"
                             android:focusable="false"
                             android:inputType="textPersonName"
-                            android:textSize="24sp" />
+                            android:textSize="24sp"
+                            android:gravity="right"/>
                     </LinearLayout>
 
                     <View
@@ -126,7 +167,7 @@
                         android:paddingRight="10dp">
 
                         <TextView
-                            android:id="@+id/textView3"
+                            android:id="@+id/txtGender"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -137,7 +178,8 @@
                         <Spinner
                             android:id="@+id/spinner_Gender"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
+                            android:layout_height="match_parent"
+                            android:background="@color/white"/>
                     </LinearLayout>
 
                     <View
@@ -149,7 +191,7 @@
                         android:background="#c0c0c0" />
 
                     <TextView
-                        android:id="@+id/textView10"
+                        android:id="@+id/txtHobby"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -168,14 +210,6 @@
 
                     </com.google.android.material.chip.ChipGroup>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginBottom="20dp"
-                        android:background="#c0c0c0" />
                 </LinearLayout>
 
                 <TextView
@@ -191,7 +225,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:background="#FFFFFF"
+                    android:background="@drawable/background_my_profile_container"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -203,7 +237,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView4"
+                            android:id="@+id/txtShowMe"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -214,7 +248,8 @@
                         <Spinner
                             android:id="@+id/spinner_ShowMe"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
+                            android:layout_height="match_parent"
+                            android:background="@color/white"/>
                     </LinearLayout>
 
                     <View
@@ -234,7 +269,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView6"
+                            android:id="@+id/txtAgeRange"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -281,7 +316,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView8"
+                            android:id="@+id/txt_range_myprofile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -310,14 +345,6 @@
                         app:trackColorActive="#FD4C67"
                         app:trackColorInactive="#D1D1D6"
                         app:trackHeight="12dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginRight="10dp"
-                        android:background="#c0c0c0" />
                 </LinearLayout>
 
                 <Button

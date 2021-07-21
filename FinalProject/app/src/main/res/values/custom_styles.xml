@@ -34,5 +34,7 @@
     <style name="FirebaseAuthActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/white</item>
     </style>
-
+    <style name="Circle">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

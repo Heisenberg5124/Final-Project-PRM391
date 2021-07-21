@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import fpt.life.finalproject.model.Location;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,9 @@ public class MyProfile implements Parcelable {
     private String gender;
     private String showMeGender;
     private ArrayList<String> hobbies;
-    private ArrayList<String> imageList;
+    private ArrayList<String> listImage;
+    private Map<String, Integer> rangeAge = new HashMap<>();
+    private int rangeDistance;
     private String avt;
 
     protected MyProfile(Parcel in) {
@@ -32,7 +36,8 @@ public class MyProfile implements Parcelable {
         gender = in.readString();
         showMeGender = in.readString();
         hobbies = in.createStringArrayList();
-        avt = in.readString();
+        listImage = in.createStringArrayList();
+        rangeDistance = in.readInt();
     }
 
     public static final Creator<MyProfile> CREATOR = new Creator<MyProfile>() {
@@ -59,6 +64,7 @@ public class MyProfile implements Parcelable {
         dest.writeString(gender);
         dest.writeString(showMeGender);
         dest.writeStringList(hobbies);
-        dest.writeString(avt);
+        dest.writeStringList(listImage);
+        dest.writeInt(rangeDistance);
     }
 }
