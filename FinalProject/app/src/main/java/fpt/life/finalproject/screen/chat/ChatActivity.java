@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -149,6 +150,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
 
     @Override
     public void onCompleteLoadMessages(ChatRoom chatRoom) {
+        Log.d("Message", "seenAllMessagesUI: ");
         messageAdapter.notifyDataSetChanged();
         recyclerViewChatMessages.scrollToPosition(chatService.getMessages().size() - 1);
     }

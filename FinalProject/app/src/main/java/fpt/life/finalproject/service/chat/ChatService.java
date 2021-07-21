@@ -22,8 +22,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,24 +64,24 @@ public class ChatService {
     }
 
     public void getChatRoomInfo() {
-        firebaseFirestore.document(otherUid).get()
+        firebaseFirestore.collection("users").document(otherUid).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    User user = task.getResult().toObject(User.class);
-                    chatRoom = ChatRoom.builder()
-                            .myUid(myUid)
-                            .otherUid(otherUid)
-                            .otherName(user.getName())
-                            .otherAvatarUrl(user.getPhotoUrls().get(0))
-                            .isOnline(user.isOnlineStatus())
-                            .build();
-                    chatRoom.setLastTimeOnline(TimestampUtil.getLastTimeOnline(user.getLastTimeOnline(), chatRoom.isOnline()));
-                    firebaseListener.onCompleteLoadChatRoomInfo(chatRoom);
-                }
-            }
-        });
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            User user = task.getResult().toObject(User.class);
+                            chatRoom = ChatRoom.builder()
+                                    .myUid(myUid)
+                                    .otherUid(otherUid)
+                                    .otherName(user.getName())
+                                    .otherAvatarUrl(user.getPhotoUrls().get(0))
+                                    .isOnline(user.isOnlineStatus())
+                                    .build();
+                            chatRoom.setLastTimeOnline(TimestampUtil.getLastTimeOnline(user.getLastTimeOnline(), chatRoom.isOnline()));
+                            firebaseListener.onCompleteLoadChatRoomInfo(chatRoom);
+                        }
+                    }
+                });
     }
 
     public void uploadMessageImage(Uri uri) {
@@ -117,9 +115,11 @@ public class ChatService {
                 .collection("messages").add(fireStoreMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
             public void onComplete(@NonNull Task<DocumentReference> task) {
-                Log.d("SendMessage", "sendMessage: " + task.getResult().getId());
-                fireStoreMessage.put("id", task.getResult().getId());
-                saveLastMessage(fireStoreMessage);
+                if (task.isSuccessful()) {
+                    Log.d("SendMessage", "sendMessage: " + task.getResult().getId());
+                    fireStoreMessage.put("id", task.getResult().getId());
+                    saveLastMessage(fireStoreMessage);
+                }
             }
         });
     }
@@ -163,12 +163,14 @@ public class ChatService {
                                     break;
                             }
                         }
+                        firebaseListener.onCompleteLoadMessages(chatRoom);
                         seenAllMessages();
                     }
                 });
     }
 
     private void seenAllMessages() {
+        Log.d("Message", "seenAllMessagesBefore: ");
         firebaseFirestore.collection("matched_users").document(generateMatchedUid())
                 .collection("messages").whereEqualTo("sender", otherUid)
                 .whereEqualTo("isSeen",false)
@@ -180,11 +182,31 @@ public class ChatService {
                             .collection("messages").document(documentSnapshot.getId())
                             .update("isSeen", true).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onComplete(@NonNull @NotNull Task<Void> task) {
-                            firebaseListener.onCompleteLoadMessages(chatRoom);
+                        public void onComplete(@NonNull Task<Void> task) {
+
                         }
                     });
+                    Log.d("Message", "seenAllMessagesAfter: ");
                 }
+                setLastMessageSeen();
+            }
+        });
+    }
+
+    private void setLastMessageSeen() {
+        firebaseFirestore.collection("matched_users").document(generateMatchedUid())
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                String senderUid = ((Map<String, Object>) task.getResult().get("lastMessage")).get("sender").toString();
+                if (senderUid.equals(otherUid))
+                    firebaseFirestore.collection("matched_users").document(generateMatchedUid()).update("lastMessage.isSeen", true)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d("Message", "seenAllMessagesLastMessage: ");
+                                }
+                            });
             }
         });
     }
