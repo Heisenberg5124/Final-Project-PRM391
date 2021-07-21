@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -58,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         onChangeService.listenMatchedUsersIsKnown();
 //        loadProgressDialog();
         getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
-        loadProgressDialog();
+//        loadProgressDialog();
 //        getCurrentUser(FirebaseAuth.getInstance().getUid());
-        getCurrentUser("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
+        getCurrentUserFromDatabase("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
 
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         homepageFragment = new HomepageFragment();
         sendDataToHomePage();
         sendDataToMyProfile();
-        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)

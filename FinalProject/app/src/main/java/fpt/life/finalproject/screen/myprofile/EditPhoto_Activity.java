@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -25,25 +24,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.PhotoAdapter;
-import fpt.life.finalproject.adapter.PhotoElementClickedListener;
 import fpt.life.finalproject.adapter.RecyclerItemSelectedListener;
 import fpt.life.finalproject.adapter.drapdrop.ItemTouchHelperCallBack;
 import fpt.life.finalproject.dto.MyProfile;
-import fpt.life.finalproject.dto.OtherUser;
-import fpt.life.finalproject.dto.register.RegistrationProfile;
 import fpt.life.finalproject.model.Photo;
 import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.service.EditPhotoService;
-import fpt.life.finalproject.service.RegisterService;
 import fpt.life.finalproject.util.ButtonUtil;
 
-public class EditPhoto_Activity extends AppCompatActivity implements PhotoElementClickedListener, RecyclerItemSelectedListener {
+public class EditPhoto_Activity extends AppCompatActivity implements RecyclerItemSelectedListener {
 
     private static final int MAX_NUM_OF_PHOTOS = 9;
     private static final int NUM_OF_COLUMNS = 3;
@@ -71,22 +65,22 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
         setContentView(R.layout.activity_edit_photo);
 
 
-        getImageList("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
-//        getImageList(FirebaseAuth.getInstance().getUid());
+//        getImageList("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
+////        getImageList(FirebaseAuth.getInstance().getUid());
 
-//        Intent i = new Intent();
-//        convertToPhotoList(i.getStringArrayListExtra("imagesListDB"));
-//        initComponents();
-//        initRecyclerView();
-//        initFireBase();
-//        onClickButtonDone();
+        Intent i = new Intent();
+        convertToPhotoList(i.getStringArrayListExtra("imagesListDB"));
+        initComponents();
+        initRecyclerView();
+        initFireBase();
+        onClickButtonDone();
 
     }
 
 
     private void initFireBase() {
 //        editPhotoService = new EditPhotoService(FirebaseAuth.getInstance().getUid());
-        editPhotoService = new EditPhotoService("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
+        editPhotoService = new EditPhotoService("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
     }
 
     private void onClickButtonDone() {  //TODO: list hiển thị khi drag drop khác với list thật trong db
@@ -126,7 +120,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
     }
 
     private void initRecyclerView() {
-        photoAdapter = new PhotoAdapter(photos, EditPhoto_Activity.this, this, viewHolder -> {
+        photoAdapter = new PhotoAdapter(photos, EditPhoto_Activity.this, viewHolder -> {
             itemTouchHelper.startDrag(viewHolder);
         }, this, buttonDone);
         recyclerViewEditPhotos.setAdapter(photoAdapter);
@@ -166,11 +160,6 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
     }
 
     @Override
-    public void onPhotoClickListener(int position) {
-        onPlusClick(position);
-    }
-
-    @Override
     public void onItemClick(Object object) {
         onPlusClick(getFirstIndexOfNull());
     }
@@ -205,7 +194,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
         return -1;
     }
 
-    private void getImageList(String userId){
+    /*private void getImageList(String userId){
         db.collection("users").document(userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -214,10 +203,10 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                         User user = task.getResult().toObject(User.class);
                         myProfile = MyProfile.builder().uid(user.getUid())
-                                .imageList(user.getPhotoUrls())
+                                .listImage(user.getPhotoUrls())
                                 .build();
 //                        progressDialog.dismiss();
-                        convertToPhotoList(myProfile.getImageList());
+                        convertToPhotoList(myProfile.getListImage());
                         Log.d("ppp", dbPhotoList.size()+"");
                         initComponents();
                         initRecyclerView();
@@ -225,7 +214,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements PhotoElemen
                         onClickButtonDone();
                     }
                 });
-    }
+    }*/
     private void convertToPhotoList(ArrayList<String> imageList){
         for (int i = 0; i < imageList.size(); i++) {
             Photo photo = new Photo();

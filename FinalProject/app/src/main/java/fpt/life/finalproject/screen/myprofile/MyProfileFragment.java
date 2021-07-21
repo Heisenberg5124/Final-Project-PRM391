@@ -3,54 +3,35 @@ package fpt.life.finalproject.screen.myprofile;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.solver.widgets.analyzer.Direct;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import android.os.Parcelable;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.aminography.choosephotohelper.ChoosePhotoHelper;
-import com.aminography.choosephotohelper.callback.ChoosePhotoCallback;
 import com.bumptech.glide.Glide;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.slider.RangeSlider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.picasso.Picasso;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.List;
 
 import fpt.life.finalproject.MainActivity;
@@ -70,9 +51,8 @@ public class MyProfileFragment extends Fragment {
     private ChoosePhotoHelper choosePhotoHelper;
     private ImageView editAva;
     private String url;
-    MyProfileService myProfileService = new MyProfileService();
-    private ImageView imageViewAvt;
     private MyProfileService myProfileService;
+    private ImageView imageViewAvt;
     private EditText eTxtName;
     private ChipGroup chipGroup;
     private RangeSlider ageRangeSlider;
@@ -98,10 +78,6 @@ public class MyProfileFragment extends Fragment {
 
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_my_profile, container, false);
-
-        birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
-        logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
-        editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
         editAva = (ImageView) rootView.findViewById(R.id.imageview_avt_myprofile);
         myProfile = getArguments().getParcelable("myProfile");
         initComponent();

@@ -36,7 +36,4 @@ public class User {
 
     private ArrayList<String> userLiked;
     private ArrayList<String> userDisliked;
-
-    private boolean onlineStatus;
-    private Timestamp lastTimeOnline;
 }
