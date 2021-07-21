@@ -1,9 +1,15 @@
 package fpt.life.finalproject;
 
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -11,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -46,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findView();
         loadProgressDialog();
-        getCurrentUser(FirebaseAuth.getInstance().getUid());
+//        getCurrentUser(FirebaseAuth.getInstance().getUid());
+        getCurrentUser("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
 
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         matchedImageView.setOnClickListener(view -> {
+            sendDataToMatched();
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, matchedFragment)
@@ -87,9 +94,8 @@ public class MainActivity extends AppCompatActivity {
         matchedFragment = new MatchedFragment();
         homepageFragment = new HomepageFragment();
         sendDataToHomePage();
-        sendDataToMatched();
         sendDataToMyProfile();
-        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
+//        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)
@@ -113,12 +119,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                         currentUser = task.getResult().toObject(User.class);
                         progressDialog.dismiss();
-
                         initFragment();
                     }
                 });
     }
-
+    public void setCurrentUserName(String currentUserName){
+        currentUser.setName(currentUserName);
+    }
     private void sendDataToHomePage(){
         Bundle bundle = new Bundle();
         bundle.putString("currentUserId",currentUser.getUid());
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
     private void sendDataToMatched(){
         Bundle bundle = new Bundle();
         bundle.putString("currentUserId",currentUser.getUid());
+        bundle.putString("currentUserName",currentUser.getName());
         matchedFragment.setArguments(bundle);
     }
 
@@ -140,19 +148,27 @@ public class MainActivity extends AppCompatActivity {
                 .gender(currentUser.getGender())
                 .hobbies(currentUser.getHobbies())
                 .showMeGender(currentUser.getShowMeGender())
-                .avt(currentUser.getPhotoUrls().get(0))
+                .listImage(currentUser.getPhotoUrls())
+                .rangeAge(currentUser.getRangeAge())
+                .rangeDistance(currentUser.getRangeDistance())
                 .build();
         bundle.putParcelable("myProfile", myProfile);
         myProfileFragment.setArguments(bundle);
     }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationService.updateLocation();
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
             }
         }
+        return super.dispatchTouchEvent(event);
     }
 }

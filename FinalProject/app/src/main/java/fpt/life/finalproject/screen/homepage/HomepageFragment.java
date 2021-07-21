@@ -164,17 +164,17 @@ public class HomepageFragment extends Fragment {
     }
 
     private void loadingProfile(View root) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
-        } else {
-            locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
-            locationService.updateLocation();
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+//                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
+//        } else {
+//            locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
+//            locationService.updateLocation();
+//        }
 
         loadProgressDialog();
-        LocationService locationService = new LocationService(getContext(),currentUserId);
+//        LocationService locationService = new LocationService(getContext(),currentUserId);
         countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -194,7 +194,7 @@ public class HomepageFragment extends Fragment {
                 }
             }
         }.start();
-        swipeService.getAllDocument(countDownTimer, locationService);
+        swipeService.getAllDocument(countDownTimer);
     }
 
     private void moreTimeToDismissDialog(ProgressDialog progressDialog, int time) {

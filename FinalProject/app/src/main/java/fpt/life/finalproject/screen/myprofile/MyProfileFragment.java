@@ -3,19 +3,28 @@ package fpt.life.finalproject.screen.myprofile;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +34,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.slider.RangeSlider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,19 +45,32 @@ import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MyProfile;
 import fpt.life.finalproject.screen.Login.Login_Activity;
-import fpt.life.finalproject.screen.Login.Profile_Activity;
 import fpt.life.finalproject.service.MyProfileService;
 
+import static android.app.Activity.RESULT_OK;
+
 public class MyProfileFragment extends Fragment {
-    private EditText birthday;
-    private Button logout;
-    private Button editImage;
+    private EditText eTxtBirthday;
+    private Button btnLogout;
+    private Button btnEditImage;
     private View rootView;
     private MyProfile myProfile;
-    MyProfileService myProfileService = new MyProfileService();
+    private ImageView imageViewAvt;
+    private MyProfileService myProfileService;
+    private EditText eTxtName;
+    private ChipGroup chipGroup;
+    private RangeSlider ageRangeSlider;
+    private RangeSlider distanceSlider;
+    private TextView txtAgeRange;
+    private TextView txtDistance;
+    private Spinner spinnerShowMe;
+    private Spinner spinnerGender;
+
+
     public MyProfileFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,50 +81,103 @@ public class MyProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_my_profile, container, false);
-
-        birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
-        logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
-        editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
         myProfile = getArguments().getParcelable("myProfile");
-        inputBirthday();
-        setSpinner();
-        addGroupHobby(addHobbies());
-        setAgeRangeSlider(28,38);
-        setDistanceSlider(20);
-        logOut(logout);
-        editImage(editImage);
+        initComponent();
+        initData();
         return rootView;
     }
 
-    private void editImage(Button button){
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(),"Chua lam",Toast.LENGTH_LONG).show();//TODO: Action Edit Image
+    private void initComponent() {
+        myProfileService = new MyProfileService(myProfile.getUid());
+        imageViewAvt = (ImageView) rootView.findViewById(R.id.imageview_avt_myprofile);
+        chipGroup = (ChipGroup) rootView.findViewById(R.id.chipgroup_hobbies_myprofile);
+        //Button
+        btnLogout = (Button) rootView.findViewById(R.id.btn_logout_profile);
+        btnEditImage = (Button) rootView.findViewById(R.id.btn_edit_image);
+        //txtDisplay
+        txtAgeRange = rootView.findViewById(R.id.txt_age_range_profile);
+        txtDistance = rootView.findViewById(R.id.txt_distance_profile);
+        eTxtBirthday = (EditText) rootView.findViewById(R.id.birthday_picker);
+        eTxtName = (EditText) rootView.findViewById(R.id.eTxtName);
+        //Slider
+        ageRangeSlider = rootView.findViewById(R.id.AgeRange);
+        distanceSlider = rootView.findViewById(R.id.distance);
+        //Spinner
+        spinnerGender = rootView.findViewById(R.id.spinner_Gender);
+        spinnerShowMe = rootView.findViewById(R.id.spinner_ShowMe);
+    }
+
+    private void initData() {
+        inputBirthday();
+        setSpinner();
+        addGroupHobby(myProfile.getHobbies());
+        setAgeRangeSlider(myProfile.getRangeAge().get("min"), myProfile.getRangeAge().get("max"));
+        setDistanceSlider(myProfile.getRangeDistance());
+        logOut(btnLogout);
+        editImage(btnEditImage);
+        setName();
+        setAvt();
+    }
+
+    private void setAvt() {
+        Picasso.get().load(myProfile.getListImage().get(0)).into(imageViewAvt);
+    }
+
+    private void editImage(Button button) {
+        button.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Chua lam", Toast.LENGTH_LONG).show();//TODO: Action Edit Image
+        });
+    }
+
+    private String checkLengthName(String message) {
+        if (message.length() > 14) return message.substring(0, 14) + "...";
+        else return message;
+    }
+
+    private void setName() {
+        eTxtName.setText(checkLengthName(myProfile.getName()));
+        eTxtName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String currentName = checkLengthName(myProfile.getName());
+                if (!eTxtName.getText().toString().equals("")) {
+                    myProfile.setName(eTxtName.getText().toString());
+                    myProfileService.updateField("name", eTxtName.getText().toString());
+                    eTxtName.setText(checkLengthName(eTxtName.getText().toString()));
+                    ((MainActivity) getActivity()).setCurrentUserName(myProfile.getName());
+                } else {
+                    eTxtName.setText(currentName);
+                }
+            } else {
+                eTxtName.setText(myProfile.getName());
             }
         });
     }
 
-
-    private void logOut(Button logout){
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(),"Chua lam",Toast.LENGTH_LONG).show();//TODO: Action Logout
-                signOut();
-            }
-        });
+    private void logOut(Button logout) {
+        logout.setOnClickListener(v -> signOut());
     }
 
-
-    private void setSpinner(){
-        Spinner spinnerGender = (Spinner) rootView.findViewById(R.id.spinner_Gender);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+    private void setSpinner() {
+        //Spinner Gender
+        ArrayAdapter<CharSequence> adapterGender = ArrayAdapter.createFromResource(getContext(),
                 R.array.gender, R.layout.custom_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGender.setAdapter(adapter);
-        Spinner spinnerShowMe = (Spinner) rootView.findViewById(R.id.spinner_ShowMe);
-        spinnerShowMe.setAdapter(adapter);
+        adapterGender.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGender.setAdapter(adapterGender);
+        setOnGenderSelect();
+        //Spinner Show Me
+        ArrayAdapter<CharSequence> adapterShowMe = ArrayAdapter.createFromResource(getContext(),
+                R.array.showMe, R.layout.custom_spinner_item);
+        adapterShowMe.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerShowMe.setAdapter(adapterShowMe);
+        setOnShowMeSelect();
+    }
+
+    private void setOnShowMeSelect() {
+        if (myProfile.getShowMeGender().equalsIgnoreCase("Male"))
+            spinnerShowMe.setSelection(0);
+        else if (myProfile.getShowMeGender().equalsIgnoreCase("Female"))
+            spinnerShowMe.setSelection(1);
+        else spinnerShowMe.setSelection(2);
         spinnerShowMe.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -116,7 +190,12 @@ public class MyProfileFragment extends Fragment {
 
             }
         });
+    }
 
+    private void setOnGenderSelect() {
+        if (myProfile.getGender().equals("Male"))
+            spinnerGender.setSelection(0);
+        else spinnerGender.setSelection(1);
         spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -131,14 +210,11 @@ public class MyProfileFragment extends Fragment {
         });
     }
 
-
     @SuppressLint("DefaultLocale")
-    private void setAgeRangeSlider(float cmin, float cmax){
-        RangeSlider rangeSlider = rootView.findViewById(R.id.AgeRange);
-        TextView textView = (TextView) rootView.findViewById(R.id.txt_age_range_profile);
-        textView.setText(String.format("%.0f - %.0f",cmin,cmax));
-        rangeSlider.setValues(cmin,cmax);
-        rangeSlider.addOnSliderTouchListener(new RangeSlider.OnSliderTouchListener() {
+    private void setAgeRangeSlider(float cmin, float cmax) {
+        txtAgeRange.setText(String.format("%.0f - %.0f", cmin, cmax));
+        ageRangeSlider.setValues(cmin, cmax);
+        ageRangeSlider.addOnSliderTouchListener(new RangeSlider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull RangeSlider slider) {
 
@@ -147,27 +223,21 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(@NonNull RangeSlider slider) {
                 List<Float> valuesRange = slider.getValues();
-                myProfileService.updateRangeAge(Math.round(valuesRange.get(0)),Math.round(valuesRange.get(1)));
+                myProfileService.updateRangeAge(Math.round(valuesRange.get(0)), Math.round(valuesRange.get(1)));
             }
         });
-        rangeSlider.addOnChangeListener(new RangeSlider.OnChangeListener() {
-            @SuppressLint("DefaultLocale")
-            @Override
-            public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
-                List<Float> valuesRange = slider.getValues();
-                textView.setText(String.format("%.0f - %.0f",valuesRange.get(0),valuesRange.get(1)));
-            }
+        ageRangeSlider.addOnChangeListener((slider, value, fromUser) -> {
+            List<Float> valuesRange = slider.getValues();
+            txtAgeRange.setText(String.format("%.0f - %.0f", valuesRange.get(0), valuesRange.get(1)));
         });
     }
 
 
     @SuppressLint("DefaultLocale")
-    private void setDistanceSlider(float cdistance){
-        RangeSlider rangeSlider = rootView.findViewById(R.id.distance);
-        TextView textView = (TextView) rootView.findViewById(R.id.txt_distance_profile);
-        textView.setText(String.format("%.0f",cdistance));
-        rangeSlider.setValues(cdistance);
-        rangeSlider.addOnSliderTouchListener(new RangeSlider.OnSliderTouchListener() {
+    private void setDistanceSlider(float cdistance) {
+        txtDistance.setText(String.format("%.0f", cdistance));
+        distanceSlider.setValues(cdistance);
+        distanceSlider.addOnSliderTouchListener(new RangeSlider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull RangeSlider slider) {
 
@@ -176,87 +246,67 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(@NonNull RangeSlider slider) {
                 List<Float> valuesRange = slider.getValues();
-                myProfileService.updateDistance("rangeDistance",Math.round(valuesRange.get(0)));
+                myProfileService.updateDistance("rangeDistance", Math.round(valuesRange.get(0)));
 
             }
         });
-        rangeSlider.addOnChangeListener(new RangeSlider.OnChangeListener() {
-            @SuppressLint("DefaultLocale")
-            @Override
-            public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
-                List<Float> valuesRange = slider.getValues();
-                textView.setText(String.format("%.0f",valuesRange.get(0)));
-            }
+        distanceSlider.addOnChangeListener((slider, value, fromUser) -> {
+            List<Float> valuesRange = slider.getValues();
+            txtDistance.setText(String.format("%.0f", valuesRange.get(0)));
         });
     }
 
 
-    private void inputBirthday(){
+    @SuppressLint("SetTextI18n")
+    private void inputBirthday() {
         final Calendar c = Calendar.getInstance();
-        //TODO: change to birthday of my profile
         c.setTime(myProfile.getBirthday());
-        int mYear = c.get(Calendar.YEAR); // current year
-        int mMonth = c.get(Calendar.MONTH); // current month
-        int mDay = c.get(Calendar.DATE); // current day
-        birthday.setText(mDay + "/" + (mMonth) + "/" + mYear);
-        birthday.setOnClickListener(v ->{
-            setDate(birthday,mYear,mMonth,mDay);
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DATE);
+        eTxtBirthday.setText(mDay + "/" + (mMonth) + "/" + mYear);
+        eTxtBirthday.setOnClickListener(v -> {
+            setDate(eTxtBirthday, mYear, mMonth, mDay);
         });
     }
 
-
-    public void setDate(EditText tv,int mYear, int mMonth,int mDay){
+    @SuppressLint("SetTextI18n")
+    public void setDate(EditText tv, int mYear, int mMonth, int mDay) {
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        tv.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-                        myProfileService.updateBirthDay("birthday",myProfileService.dateToTimeStamp(year,monthOfYear,dayOfMonth));
-                    }
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    tv.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                    myProfileService.updateBirthDay("birthday", myProfileService.dateToTimeStamp(year, monthOfYear, dayOfMonth));
                 }, mYear, mMonth, mDay);
         datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
         datePickerDialog.show();
     }
 
-
-    private ArrayList<String> addHobbies(){
-        ArrayList<String> s = new ArrayList<>();
-        s.add("Swim");
-        s.add("Game");
-        s.add("Dance");
-        s.add("Book");
-        s.add("Food");
-        return s;
-    }
-    private ArrayList<String> addHobbiesChange(){
-        ArrayList<String> s = new ArrayList<>();
-        s.add("Drug");
-        s.add("Drunk");
-        s.add("DmQuan");
-        s.add("Woman");
-        s.add("Money");
-        return s;
-    }
-
-//    private void mockData(){
-//        MyProfile myProfile = new MyProfile("Z7sJqYLoCbhxGPU8dzX4VXehaZe2","Anh Quan","10/05/2021","Male","Female",addHobbies(),"Lorem ipsum dolor sit amet, consectetur adipiscing elit");
-//    }
-
-    private void addGroupHobby(ArrayList<String> hobbies){
-        ChipGroup chipGroup = (ChipGroup) rootView.findViewById(R.id.chipgroup_hobbies_myprofile);
+    private void addGroupHobby(ArrayList<String> hobbies) {
+        chipGroup.removeAllViews();
         for (String s : hobbies) {
             Chip chip = new Chip(getContext());
             chip.setTextSize(18);
             chip.setText(s);
-            chip.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    myProfileService.updateHobbies(addHobbiesChange());
-                }
-            });
             chipGroup.addView(chip);
         }
+        chipGroup.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditHobbiesActivity.class);
+            intent.putExtra("hobbies", myProfile.getHobbies());
+            startActivityForResult(intent, 1);
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                myProfile.setHobbies((ArrayList<String>) data.getSerializableExtra("editedHobbies"));
+                myProfileService.updateHobbies(myProfile.getHobbies());
+                addGroupHobby(myProfile.getHobbies());
+            }
+        }
+
     }
 
     public void signOut() {

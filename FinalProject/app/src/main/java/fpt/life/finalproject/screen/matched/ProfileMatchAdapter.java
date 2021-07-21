@@ -1,7 +1,6 @@
 package fpt.life.finalproject.screen.matched;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
 
-public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHolder> {
-    private List<MatchedProfile> listMatched;
-    private OnItemListener onItemListener;
-    public MatchedAdapter(List<MatchedProfile> listMatched, OnItemListener onItemListener) {
+public class ProfileMatchAdapter extends RecyclerView.Adapter<ProfileMatchAdapter.ViewHolder>{
+    private ProfileMatchAdapter.OnItemListener onItemListener;
+    private List<MatchedProfile> listMatchedProfile;
+
+    public ProfileMatchAdapter( List<MatchedProfile> listMatchedProfile, OnItemListener onItemListener) {
         this.onItemListener = onItemListener;
-        this.listMatched = listMatched;
+        this.listMatchedProfile = listMatchedProfile;
     }
 
     @NonNull
@@ -31,45 +32,41 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View matchedView = inflater.inflate(R.layout.recycler_view_item_showmatched, parent, false);
+        View matchedView = inflater.inflate(R.layout.recycler_view_item_show_profile_match, parent, false);
         ViewHolder viewHolder = new ViewHolder(matchedView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MatchedProfile matchedProfile = listMatched.get(position);
+    public void onBindViewHolder(@NonNull ProfileMatchAdapter.ViewHolder holder, int position) {
+        MatchedProfile matchedProfile = listMatchedProfile.get(position);
         ImageView avt_matched_view = holder.avt_matched;
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
         TextView text_view_name_matched_view = holder.text_view_name_matched;
         text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
-        ImageView isOnline = holder.imageViewIsOnline;
-        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
-        isOnline.setColorFilter(Color.parseColor(colorStatus));
     }
-
+    public void filterProfileList(ArrayList<MatchedProfile> filteredList) {
+        listMatchedProfile = filteredList;
+        notifyDataSetChanged();
+    }
     @Override
     public int getItemCount() {
-        return listMatched.size();
+        return listMatchedProfile.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView avt_matched;
         public TextView text_view_name_matched;
-        public ImageView imageViewIsOnline;
         public ViewHolder(View itemView) {
             super(itemView);
-            avt_matched = itemView.findViewById(R.id.image_view_avt_chatted);
-            imageViewIsOnline = itemView.findViewById(R.id.isOnline_show_match);
-            text_view_name_matched =itemView.findViewById(R.id.text_view_name_matched);
+            avt_matched = itemView.findViewById(R.id.image_view_avt_match_profile);
+            text_view_name_matched =itemView.findViewById(R.id.text_view_name_profile_match);
             itemView.setOnClickListener(this);
         }
-        public String a(){
-            return avt_matched.toString() + " " + text_view_name_matched.toString() + " "+ this.toString();
-        }
+
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(listMatched.get(getAdapterPosition()).getOtherUid());
+            onItemListener.onItemClick(listMatchedProfile.get(getAdapterPosition()).getOtherUid());
         }
     }
     public interface OnItemListener{

@@ -1,6 +1,7 @@
 package fpt.life.finalproject.screen.matched;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
+import fpt.life.finalproject.service.MatchedService;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     private List<MatchedProfile> listChatted;
@@ -42,10 +42,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         ImageView avtChatted = holder.avtChatted;
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avtChatted);
         TextView name = holder.textViewNameChatted;
-        name.setText(matchedProfile.getName());
+        name.setText(matchedProfile.getOtherUserName());
         TextView lastMessage = holder.textViewLastMessage;
-        lastMessage.setText(String.format("%s: %s • %s",matchedProfile.getSender(), matchedProfile.getLastMessage(), matchedProfile.getTimeLastMessage()));
-
+        lastMessage.setText(String.format("%s: %s • %s",matchedProfile.getSender(), checkLengthMessage(matchedProfile.getSender(),matchedProfile.getLastMessage()) , matchedProfile.getTimeLastMessage()));
+        ImageView isOnline = holder.imageViewIsOnline;
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        isOnline.setColorFilter(Color.parseColor(colorStatus));
     }
 
     @Override
@@ -57,19 +59,26 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         public ImageView avtChatted;
         public TextView textViewNameChatted;
         public TextView textViewLastMessage;
+        public ImageView imageViewIsOnline;
         public ViewHolder(View itemView) {
             super(itemView);
             avtChatted = itemView.findViewById(R.id.image_view_avt_chatted);
+            imageViewIsOnline = itemView.findViewById(R.id.isOnline_show_chat);
             textViewNameChatted =itemView.findViewById(R.id.text_view_name_chatted);
             textViewLastMessage = itemView.findViewById(R.id.text_view_lastmessage_chatted);
             itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(listChatted.get(getAdapterPosition()).getUid());
+            onItemListener.onItemClick(listChatted.get(getAdapterPosition()).getOtherUid());
         }
     }
     public interface OnItemListener{
         void onItemClick(String uid);
+    }
+    private String checkLengthMessage(String senderName, String message){
+        if (message == null) return null;
+        if ((senderName.length() + message.length())> 32) return message.substring(0,28-senderName.length())+"...";
+        else return message;
     }
 }
