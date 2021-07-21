@@ -1,5 +1,6 @@
 package fpt.life.finalproject.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
@@ -28,8 +29,10 @@ public class User {
     private ArrayList<String> photoUrls;
     private GeoPoint location;
     private String city;
-    private Map<String,Integer> rangeAge = new HashMap<>();
+    private Timestamp lastTimeOnline;
+    private Map<String, Integer> rangeAge = new HashMap<>();
     private int rangeDistance;
+    private boolean onlineStatus;
 
     private ArrayList<String> userLiked;
     private ArrayList<String> userDisliked;

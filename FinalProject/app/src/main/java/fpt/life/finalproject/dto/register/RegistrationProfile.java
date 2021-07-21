@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-import fpt.life.finalproject.model.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RegistrationProfile implements Parcelable {
 
+    private String uid;
+
     private String name;
     private String birthday;
     private String bio;
@@ -26,7 +27,7 @@ public class RegistrationProfile implements Parcelable {
 
     private List<String> hobbies;
 
-    private List<String> photos;
+    private List<String> photoUrls;
 
     private String city;
 
@@ -34,13 +35,14 @@ public class RegistrationProfile implements Parcelable {
     private double longitude;
 
     protected RegistrationProfile(Parcel in) {
+        uid = in.readString();
         name = in.readString();
         birthday = in.readString();
         bio = in.readString();
         gender = in.readString();
         showMeGender = in.readString();
         hobbies = in.createStringArrayList();
-        photos = in.createStringArrayList();
+        photoUrls = in.createStringArrayList();
         city = in.readString();
     }
 
@@ -63,13 +65,14 @@ public class RegistrationProfile implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(uid);
         dest.writeString(name);
         dest.writeString(birthday);
         dest.writeString(bio);
         dest.writeString(gender);
         dest.writeString(showMeGender);
         dest.writeStringList(hobbies);
-        dest.writeStringList(photos);
+        dest.writeStringList(photoUrls);
         dest.writeString(city);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);

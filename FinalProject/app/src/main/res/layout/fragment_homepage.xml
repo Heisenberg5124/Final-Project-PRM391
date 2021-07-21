@@ -41,15 +41,16 @@
                     android:textSize="30dp"
                     android:text="No Profile Found" />
 
-                <Button
+                <at.markushi.ui.CircleButton
                     android:id="@+id/refresh_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Refresh"
-                    android:textColor="#FD4C67"
-                    app:background="@drawable/custom_button_refresh"
-                    android:textAllCaps="false"
-                    app:backgroundTint="@android:color/transparent" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_refresh"
+                    app:cb_pressedRingWidth="0dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/color_border_circle"
+                    app:cb_color="@color/fui_transparent" />
 
             </LinearLayout>
 

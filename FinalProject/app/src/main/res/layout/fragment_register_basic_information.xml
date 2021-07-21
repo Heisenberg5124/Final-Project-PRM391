@@ -53,20 +53,6 @@
             app:layout_constraintTop_toBottomOf="@+id/text_view_infor" />
 
         <EditText
-            android:id="@+id/edit_text_city"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:ems="10"
-            android:hint="City"
-            android:inputType="textPersonName"
-            android:textColor="#928585"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="@+id/edit_text_birthday"
-            app:layout_constraintStart_toStartOf="@+id/edit_text_birthday"
-            app:layout_constraintTop_toBottomOf="@+id/edit_text_birthday" />
-
-        <EditText
             android:id="@+id/edit_text_birthday"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -93,9 +79,9 @@
             android:maxLength="500"
             android:textColor="#928585"
             android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="@+id/edit_text_city"
-            app:layout_constraintStart_toStartOf="@+id/edit_text_city"
-            app:layout_constraintTop_toBottomOf="@+id/edit_text_city" />
+            app:layout_constraintEnd_toEndOf="@+id/edit_text_birthday"
+            app:layout_constraintStart_toStartOf="@+id/edit_text_birthday"
+            app:layout_constraintTop_toBottomOf="@+id/edit_text_birthday" />
 
         <TextView
             android:id="@+id/text_view_word_counter"

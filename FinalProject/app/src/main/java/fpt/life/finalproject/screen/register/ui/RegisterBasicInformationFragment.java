@@ -19,6 +19,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,10 +34,11 @@ public class RegisterBasicInformationFragment extends Fragment {
 
     private EditText editTextName;
     private EditText editTextBirthday;
-    private EditText editTextCity;
     private EditText editTextBio;
     private TextView textViewWordCounter;
     private Button buttonContinue;
+
+    private final Calendar calendar = Calendar.getInstance();
 
     private RegistrationProfile registrationProfile;
 
@@ -76,7 +79,6 @@ public class RegisterBasicInformationFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_register_basic_information, container, false);
         initComponents();
-        inputBirthday();
         return view;
     }
 
@@ -89,12 +91,28 @@ public class RegisterBasicInformationFragment extends Fragment {
     private void initComponents() {
         editTextName = view.findViewById(R.id.edit_text_name);
         editTextBirthday = view.findViewById(R.id.edit_text_birthday);
-        editTextCity = view.findViewById(R.id.edit_text_city);
         editTextBio = view.findViewById(R.id.edit_text_bio);
         textViewWordCounter = view.findViewById(R.id.text_view_word_counter);
         buttonContinue = view.findViewById(R.id.button_register_continue_basic_information);
 
+        editTextBirthday.setOnClickListener(v -> {
+            setDate(editTextBirthday);
+        });
+
         addTextChangedListenerForEditText(editTextName, editTextBirthday, editTextBio);
+    }
+
+    private void setDate(EditText editText) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, month);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    String dateShow = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year);
+                    editText.setText(dateShow);
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
+        datePickerDialog.show();
     }
 
     private void addTextChangedListenerForEditText(EditText ...editTexts) {
@@ -107,9 +125,9 @@ public class RegisterBasicInformationFragment extends Fragment {
 
         buttonContinue.setOnClickListener(v -> {
             registrationProfile = RegistrationProfile.builder()
+                    .uid(FirebaseAuth.getInstance().getUid())
                     .name(editTextName.getText().toString())
                     .birthday(editTextBirthday.getText().toString())
-                    .city(editTextCity.getText().toString())
                     .bio(editTextBio.getText().toString())
                     .build();
 
@@ -117,26 +135,5 @@ public class RegisterBasicInformationFragment extends Fragment {
                     = RegisterBasicInformationFragmentDirections.actionFragmentRegisterBasicInformationToFragmentRegisterGender(registrationProfile);
             navController.navigate(action);
         });
-    }
-
-    private void inputBirthday() {
-        editTextBirthday.setOnClickListener(v -> {
-            setDate(editTextBirthday);
-        });
-    }
-
-    private void setDate(EditText editText) {
-        final Calendar calendar = Calendar.getInstance();
-        int mYear = calendar.get(Calendar.YEAR);
-        int mMonth = calendar.get(Calendar.MONTH);
-        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                (view, year, month, dayOfMonth) -> {
-                    String dateShow = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year);
-                    editText.setText(dateShow);
-                }, mYear, mMonth, mDay);
-        datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
-        datePickerDialog.show();
     }
 }

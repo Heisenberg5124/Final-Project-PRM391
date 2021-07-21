@@ -1,10 +1,8 @@
 package fpt.life.finalproject.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,9 +19,12 @@ import fpt.life.finalproject.dto.HomePageProfile;
 public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardStackAdapter.ViewHolder> {
 
     private List<HomePageProfile> homePageProfileList;
+    private InformationHomePageClickedListener informationHomePageClickedListener;
 
-    public HomePageCardStackAdapter(List<HomePageProfile> homePageProfileList) {
+    public HomePageCardStackAdapter(List<HomePageProfile> homePageProfileList,
+                                    InformationHomePageClickedListener informationHomePageClickedListener ) {
         this.homePageProfileList = homePageProfileList;
+        this.informationHomePageClickedListener = informationHomePageClickedListener;
     }
 
     @NonNull
@@ -73,8 +74,7 @@ public class HomePageCardStackAdapter extends RecyclerView.Adapter<HomePageCardS
             infoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("dm", data.getUid());
-                    //TODO: infoActivity();
+                    informationHomePageClickedListener.onInformationHomePageClickListener(data.getUid());
                 }
             });
         }

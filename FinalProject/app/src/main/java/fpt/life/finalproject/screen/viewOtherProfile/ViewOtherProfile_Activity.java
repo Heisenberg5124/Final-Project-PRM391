@@ -4,6 +4,11 @@ package fpt.life.finalproject.screen.viewOtherProfile;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
+import android.graphics.Point;
+import android.graphics.drawable.shapes.Shape;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,125 +19,190 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 import fpt.life.finalproject.R;
+import fpt.life.finalproject.dto.OtherUser;
+import fpt.life.finalproject.model.User;
 
 public class ViewOtherProfile_Activity extends AppCompatActivity{
 
-    TextView nameAndAge, location, bio;
-    ImageView imageView;
-    ChipGroup chipGroup;
-    GridLayout gridLayout;
-    String[] images = {"https://i.pinimg.com/564x/3c/dd/56/3cdd56556aaf558988e225c312d34e97.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://ruthamcauquan2.info/wp-content/uploads/2020/07/anh-gai-xinh-hap-dan-nhieu-nam-gioi-16.jpg",
-                        "https://itcafe.vn/wp-content/uploads/2021/01/anh-gai-xinh-4.jpg",
-                        "https://itcafe.vn/wp-content/uploads/2021/01/anh-gai-xinh-4.jpg"};
-    String[] hobbies = {"Reading", "Travel", "Movie", "Music", "Game", "Gym"};
-
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private TextView nameAndAge, location, bio;
+    private ImageView imageAva, imageBack;
+    private ChipGroup chipGroup;
+    private GridLayout gridLayout;
+    private OtherUser otherUser;
+    private ArrayList<String> images;
+    private ArrayList<String> hobbies;
+    private String color;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_other_profile);
-
+        color = "#FD4C67";
         nameAndAge = (TextView) findViewById(R.id.txt_name);
-        nameAndAge.setText("Thanh Tâm, 21");
-
         location = (TextView) findViewById(R.id.txt_Location);
-        location.setText("Quảng Bình");
-
         bio = (TextView) findViewById(R.id.txt_introduce);
-        bio.setText("Cô gái dễ mến, yêu màu tím, thích sự chung thủy, ghét sự giả dối");
-
-
-        imageView = (ImageView) findViewById(R.id.img_avata);
-        String url = images[0];
-        Picasso.get().load(url)
-                .fit().centerCrop()
-                .into(imageView);
-
-        addGroupHobby(hobbies);
-        addGroupImage(images);
+        imageAva = (ImageView) findViewById(R.id.img_avata);
+        imageBack = (ImageView) findViewById(R.id.image_view_back) ;
+//        Intent i = new Intent();
+//        getOtherUser(i.getStringExtra("otherUid"));
+        getOtherUser("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
 
     }
 
-    private void addGroupHobby(String[] hobbies){
-        String color = "#FD4C67";
+    private void addGroupHobby(ArrayList<String> hobbies){
         chipGroup = (ChipGroup) findViewById(R.id.chip_group1);
-        for (int i = 0; i < hobbies.length; i++) {
+        for (int i = 0; i < hobbies.size(); i++) {
             Chip chip = new Chip(this);
             chip.setTextSize(14);
             chip.setChipStrokeColor(ColorStateList.valueOf(Color.parseColor(color)));
             chip.setChipStrokeWidth(1.5f);
-            chip.setText(hobbies[i]);
+            chip.setText(hobbies.get(i));
             chipGroup.addView(chip);
         }
-
     }
 
-
-    private void addGroupImage(String[] images)  {
-        /*DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        Log.d("Width", "addGroupImage: " + dpWidth);*/
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = (int) (displayMetrics.heightPixels / 3.0 * 4);
-        int dpWidth = (int) (displayMetrics.widthPixels);
-        Log.d("Width", "addGroupImage: " + dpWidth);
-
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void addGroupImage(ArrayList<String> images)  {
         gridLayout = findViewById(R.id.grid_layout);
         gridLayout.setColumnCount(2);
-        gridLayout.setRowCount((int) Math.ceil((double) images.length / 2));
+        gridLayout.setRowCount((int) Math.ceil((double) images.size() / 2));
 
-        for (int i = 1, c = 0, r = 0; i < images.length; i++, c++) {
+        for (int i = 1, c = 0, r = 0; i < images.size(); i++, c++) {
             if (c == 2) {
                 c = 0;
                 r++;
             }
-            ImageView oImageView = new ImageView(this);
+            ShapeableImageView oImageView = new ShapeableImageView(this);
             oImageView.setImageResource(R.drawable.logo);
-            String url = images[i];
+            String url = images.get(i);
             Picasso.get().load(url).fit().into(oImageView);
-
-            //oImageView.setPadding((int) ((dpWidth - 10) * 0.075f), 0, (int) ((dpWidth - 10) * 0.075f), 0);
+            oImageView.setShapeAppearanceModel(oImageView.getShapeAppearanceModel().toBuilder().setAllCornerSizes(15).build());
+            oImageView.setStrokeColor(ColorStateList.valueOf(Color.parseColor(color)));
+            oImageView.setStrokeWidth(1.5f);
 
             GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-            param.width = (int) (dpWidth * 0.35f);
-            param.height = (int) (dpWidth * 0.35f * 1.18f);
-            param.leftMargin = 10;
-            param.rightMargin = 10;
-            param.bottomMargin = 10;
-            param.topMargin = 10;
+            Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+            int screenWidth = size.x;
+            int halfScreenWidth = (int)(screenWidth *0.5);
+            param.width = halfScreenWidth-50;
+            param.height = (int) (param.width *1.3f);
+            param.leftMargin = 20;
+            param.rightMargin = 20;
+            param.bottomMargin = 20;
+            param.topMargin = 20;
             param.setGravity(Gravity.CENTER);
             param.columnSpec = GridLayout.spec(c);
             param.rowSpec = GridLayout.spec(r);
             oImageView.setLayoutParams(param);
             gridLayout.addView(oImageView);
+
             int pos = i;
             oImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i  = new Intent(ViewOtherProfile_Activity.this, FullScreen.class);
                     i.putExtra("images", images);
-                    i.putExtra("position", pos);
+                    i.putExtra("position", pos-1);
                     startActivity(i);
-
                 }
             });
         }
     }
 
+    private void getOtherUser(String userId){
+        db.collection("users").document(userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        User user = task.getResult().toObject(User.class);
+                        otherUser = OtherUser.builder().userID(user.getUid())
+                                .age(calculateAge(user.getBirthday()))
+                                .bio(user.getBio())
+                                .hobbies(user.getHobbies())
+                                .listImage(user.getPhotoUrls())
+                                .name(user.getName())
+                                .city(user.getCity())
+                                .build();
+//                        progressDialog.dismiss();
+                        setOtherUserData();
+
+                    }
+                });
+    }
+
+    private int calculateAge(Date anotherUserBirthday){
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Calendar anotherUserBirthdayCalendar = Calendar.getInstance();
+        anotherUserBirthdayCalendar.setTime(anotherUserBirthday);
+        int anotherUserYear = anotherUserBirthdayCalendar.get(Calendar.YEAR);
+        return currentYear - anotherUserYear;
+    }
+
+    private void setAvaImage(ImageView image){
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        int screenWidth = size.x;
+        image.getLayoutParams().height = (int) (screenWidth*1.2f);
+        image.requestLayout();
+        Picasso.get().load(images.get(0))
+                .fit().centerCrop()
+                .into(image);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i  = new Intent(ViewOtherProfile_Activity.this, FullAva.class);
+                i.putExtra("avaUrl", images.get(0));
+                startActivity(i);
+            }
+        });
+    }
+
+    private void clickBack(ImageView imageView){
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setOtherUserData(){
+        nameAndAge.setText(otherUser.getName()+", "+otherUser.getAge());
+        location.setText(otherUser.getCity());
+        bio.setText(otherUser.getBio());
+        hobbies = otherUser.getHobbies();
+        images = otherUser.getListImage();
+        setAvaImage(imageAva);
+        addGroupHobby(hobbies);
+        addGroupImage(images);
+        clickBack(imageBack);
+    }
 
 }

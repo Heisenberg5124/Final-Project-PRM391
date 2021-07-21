@@ -58,5 +58,17 @@
         <argument
             android:name="registration_profile"
             app:argType="fpt.life.finalproject.dto.register.RegistrationProfile" />
+        <action
+            android:id="@+id/action_fragment_register_photos_to_fragment_register_location"
+            app:destination="@id/fragment_register_location" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_register_location"
+        android:name="fpt.life.finalproject.screen.register.ui.RegisterLocationFragment"
+        android:label="fragment_register_location"
+        tools:layout="@layout/fragment_register_location" >
+        <argument
+            android:name="user_uid"
+            app:argType="string" />
     </fragment>
 </navigation>

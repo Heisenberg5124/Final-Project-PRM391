@@ -1,6 +1,7 @@
 package fpt.life.finalproject.screen.matched;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,10 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
         ImageView avt_matched_view = holder.avt_matched;
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
         TextView text_view_name_matched_view = holder.text_view_name_matched;
-        text_view_name_matched_view.setText(matchedProfile.getName());
+        text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
+        ImageView isOnline = holder.imageViewIsOnline;
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        isOnline.setColorFilter(Color.parseColor(colorStatus));
     }
 
     @Override
@@ -52,9 +56,11 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView avt_matched;
         public TextView text_view_name_matched;
+        public ImageView imageViewIsOnline;
         public ViewHolder(View itemView) {
             super(itemView);
             avt_matched = itemView.findViewById(R.id.image_view_avt_chatted);
+            imageViewIsOnline = itemView.findViewById(R.id.isOnline_show_match);
             text_view_name_matched =itemView.findViewById(R.id.text_view_name_matched);
             itemView.setOnClickListener(this);
         }
@@ -63,7 +69,7 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
         }
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(listMatched.get(getAdapterPosition()).getUid());
+            onItemListener.onItemClick(listMatched.get(getAdapterPosition()).getOtherUid());
         }
     }
     public interface OnItemListener{

@@ -1,23 +1,41 @@
 package fpt.life.finalproject.screen.matched;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
+import fpt.life.finalproject.dto.Profile;
+import fpt.life.finalproject.model.Hobby;
+import fpt.life.finalproject.service.MatchedService;
 
-public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemListener,ChatAdapter.OnItemListener{
-    ArrayList<MatchedProfile> profileList = new ArrayList<>();
-    ArrayList<MatchedProfile> profileChattedList = new ArrayList<>();
-    ArrayList<MatchedProfile> profileMatchedList = new ArrayList<>();
+public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemListener, ChatAdapter.OnItemListener ,ProfileMatchAdapter.OnItemListener{
+    private ArrayList<MatchedProfile> profileList = new ArrayList<>();
+    private ArrayList<MatchedProfile> profileChattedList = new ArrayList<>();
+    private ArrayList<MatchedProfile> profileMatchedList = new ArrayList<>();
+    private MatchedService matchedService;
+    private RecyclerView rvMatched;
+    private MatchedAdapter matchedAdapter;
+    private ChatAdapter chatAdapter;
+    private ProfileMatchAdapter profileMatchAdapter;
+    private RecyclerView rvChatted;
+    private String uid;
+    private String name;
+    private View rootView;
+    private SearchView searchProfile;
+
     public MatchedFragment() {
         // Required empty public constructor
     }
@@ -27,48 +45,141 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         super.onCreate(savedInstanceState);
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_matched, container, false);
-
-        init(rootView);
+        rootView = inflater.inflate(R.layout.fragment_matched, container, false);
+        uid = getArguments().getString("currentUserId");
+        name = getArguments().getString("currentUserName");
+        matchedService = new MatchedService(uid, name);
+        init();
+        getData();
+        searchProfileOnclick();
         return rootView;
     }
 
-        public void init(View root){
-            profileChattedList.clear();
-            profileMatchedList.clear();
-            profileList.clear();
-            setMockData();
-            //Match RecyclerView
-            RecyclerView rvMatched = (RecyclerView) root.findViewById(R.id.RecyclerView_Matched_Matched);
-            LinearLayoutManager layoutManagerMatched = new LinearLayoutManager(getActivity());
-            layoutManagerMatched.setOrientation(LinearLayoutManager.HORIZONTAL);
-            rvMatched.setLayoutManager(layoutManagerMatched);
-            MatchedAdapter matchedAdapter =  new MatchedAdapter(profileMatchedList,this);
-            rvMatched.setAdapter(matchedAdapter);
-            //Chat RecyclerView
-            RecyclerView rvChatted = (RecyclerView) root.findViewById(R.id.RecyclerView_Matched_Chat);
-            LinearLayoutManager layoutManagerChatted = new LinearLayoutManager(getActivity());
-            rvChatted.setLayoutManager(layoutManagerChatted);
-            ChatAdapter chatAdapter = new ChatAdapter(profileChattedList,this);
-            rvChatted.setAdapter(chatAdapter);
+    public void init() {
+        profileChattedList.clear();
+        profileMatchedList.clear();
+        searchProfile = rootView.findViewById(R.id.search_view_my_profile);
+        //Match RecyclerView
+        rvMatched = rootView.findViewById(R.id.RecyclerView_Matched_Matched);
+        LinearLayoutManager layoutManagerMatched = new LinearLayoutManager(getActivity());
+        layoutManagerMatched.setOrientation(LinearLayoutManager.HORIZONTAL);
+        rvMatched.setLayoutManager(layoutManagerMatched);
+        matchedAdapter = new MatchedAdapter(profileMatchedList, this);
+        rvMatched.setAdapter(matchedAdapter);
+        //Chat RecyclerView
+        rvChatted = (RecyclerView) rootView.findViewById(R.id.RecyclerView_Matched_Chat);
+        LinearLayoutManager layoutManagerChatted = new LinearLayoutManager(getActivity());
+        rvChatted.setLayoutManager(layoutManagerChatted);
+        chatAdapter = new ChatAdapter(profileChattedList, this);
+        rvChatted.setAdapter(chatAdapter);
+        //Profile Adapter
+        profileMatchAdapter = new ProfileMatchAdapter(profileList,this);
     }
 
-    public void setMockData(){
-        profileList.add(new MatchedProfile("1YyOVbEZ9nbclrT9iX5GIRTCboA3","Xaki","https://firebasestorage.googleapis.com/v0/b/prm391-final-project.appspot.com/o/profile_photos%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2%2Fbackground_image.png?alt=media&token=e66b3b2a-58f0-4890-a098-6c4eb17ba83d","MayDitFPT","12:00","online","Hung"));
-        profileList.add(new MatchedProfile("AmfYFNPgJxbltQfOhOUEkmfvEx63","Vinhdh","https://firebasestorage.googleapis.com/v0/b/prm391-final-project.appspot.com/o/profile_photos%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2_0.jpg?alt=media&token=107639eb-9a8a-494a-a921-e3b9eb41ba25","BeoHamNghi","12:00","5 minutes ago","Tri"));
-        profileList.add(new MatchedProfile("EqVdSFIZhmbfDdTVJSbXb1hB78l1","Hungnd","https://firebasestorage.googleapis.com/v0/b/prm391-final-project.appspot.com/o/profile_photos%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2_0.jpg?alt=media&token=107639eb-9a8a-494a-a921-e3b9eb41ba25",null,"12:00","online","Xaki"));
-        profileList.add(new MatchedProfile("GzH63ZC55UeAOP5f316DiS08Hj82","Tri","https://firebasestorage.googleapis.com/v0/b/prm391-final-project.appspot.com/o/profile_photos%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2%2FnjZ3h3Mn4yUqWqZk0ZoSl2qGP5b2_0.jpg?alt=media&token=107639eb-9a8a-494a-a921-e3b9eb41ba25",null,"12:00","25 minutes ago","Vinh"));
-        for(MatchedProfile profile: profileList){
-            if (profile.getLastMessage() == null){
-                profileMatchedList.add(profile);
-            }else profileChattedList.add(profile);
+    private void searchProfileOnclick(){
+        searchProfile.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.equals("")){
+                    rvChatted.setAdapter(chatAdapter);
+                }else{
+                    if (newText.length()==1){
+                        profileList.clear();
+                        profileList.addAll(profileMatchedList);
+                        profileList.addAll(profileChattedList);
+                        rvChatted.setAdapter(profileMatchAdapter);
+                    }
+                    List<MatchedProfile> filteredProfileList = filterProfile(newText);
+                    profileMatchAdapter.filterProfileList((ArrayList<MatchedProfile>) filteredProfileList);
+                }
+                return false;
+            }
+        });
+    }
+
+    private List<MatchedProfile> filterProfile(String text) {
+        String lowerCaseQuery = text.toLowerCase();
+        List<MatchedProfile> filteredProfileList = new ArrayList<>();
+        for (MatchedProfile profile : profileList) {
+            String hobbyText = profile.getOtherUserName().toLowerCase();
+            if (hobbyText.contains(lowerCaseQuery))
+                filteredProfileList.add(profile);
         }
+        return filteredProfileList;
     }
     @Override
     public void onItemClick(String uid) {
 //        Todo: intent to another screen
+    }
+
+    private void getData() {
+        OnInforAnotherUserChange onInforAnotherUserChange = new OnInforAnotherUserChange() {
+            @Override
+            public void onNewMatchedProfile(MatchedProfile matchedProfile) {
+                profileMatchedList.add(matchedProfile);
+//                profileList.add(matchedProfile);
+                matchedAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNameChange(int pos, String newName, String typeUser) {
+                if (typeUser.equals("Chatted")) {
+                    profileChattedList.get(pos).setOtherUserName(newName);
+                    chatAdapter.notifyItemChanged(pos);
+                } else {
+                    Log.d("CheckOnlineChatted", " " + profileMatchedList.size());
+                    profileMatchedList.get(pos).setOtherUserName(newName);
+                    matchedAdapter.notifyItemChanged(pos);
+                }
+            }
+
+            @Override
+            public void onIsOnlineChange(int pos, Boolean isOnline, String typeUser) {
+                if (typeUser.equals("Chatted")) {
+                    Log.d("CheckOnlineChatted", " " + isOnline);
+                } else Log.d("CheckOnlineMatched", " " + isOnline);
+            }
+
+            @Override
+            public void onMessageChange(int pos, MatchedProfile matchedProfile) {
+                profileChattedList.remove(pos);
+                profileChattedList.add(0, matchedProfile);
+                chatAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNewChattedProfile(int posInMatched, MatchedProfile matchedProfile) {
+                if (posInMatched != -1) {
+                    profileMatchedList.remove(posInMatched);
+                    matchedAdapter.notifyDataSetChanged();
+                }
+                profileChattedList.add(0, matchedProfile);
+//                profileList.add(matchedProfile);
+                chatAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void unMatched(String uid, String type, MatchedProfile Profile) {
+                if (type.equals("Chatted")){
+                    profileChattedList.remove(Profile);
+                    chatAdapter.notifyDataSetChanged();
+                }else {
+                    profileMatchedList.remove(Profile);
+                    matchedAdapter.notifyDataSetChanged();
+                }
+                profileList.remove(Profile);
+            }
+        };
+        matchedService.snapshotMatchUser(onInforAnotherUserChange);
     }
 }

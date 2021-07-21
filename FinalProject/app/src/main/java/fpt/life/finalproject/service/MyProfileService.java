@@ -13,10 +13,14 @@ import java.util.Date;
 import lombok.SneakyThrows;
 
 public class MyProfileService {
-    String userID = "Z7sJqYLoCbhxGPU8dzX4VXehaZe2";
+    private String userID;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference docRef;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DocumentReference docRef = db.collection("users").document(userID);
+    public MyProfileService(String userID) {
+        this.userID = userID;
+        docRef = db.collection("users").document(userID);
+    }
 
     //Update data to a field in firebase
     public void updateField(String field, String data) {
