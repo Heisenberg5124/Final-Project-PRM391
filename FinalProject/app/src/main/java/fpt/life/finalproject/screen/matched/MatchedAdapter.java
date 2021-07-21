@@ -63,7 +63,7 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
         }
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(listMatched.get(getAdapterPosition()).getUid());
+            onItemListener.onItemClick(listMatched.get(getAdapterPosition()).getOtherUid());
         }
     }
     public interface OnItemListener{

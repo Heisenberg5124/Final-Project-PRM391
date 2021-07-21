@@ -29,8 +29,10 @@ public class User {
     private ArrayList<String> photoUrls;
     private GeoPoint location;
     private String city;
+    private Timestamp lastTimeOnline;
     private Map<String, Integer> rangeAge = new HashMap<>();
     private int rangeDistance;
+    private boolean onlineStatus;
 
     private ArrayList<String> userLiked;
     private ArrayList<String> userDisliked;

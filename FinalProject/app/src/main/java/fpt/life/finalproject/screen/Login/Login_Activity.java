@@ -16,7 +16,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -28,7 +27,6 @@ import java.util.Objects;
 
 import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
-import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.register.ui.RegisterActivity;
 
 public class Login_Activity extends AppCompatActivity {
@@ -37,7 +35,7 @@ public class Login_Activity extends AppCompatActivity {
             this::onSignInResult
     );
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,15 +1,13 @@
 package fpt.life.finalproject.screen.homepage;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
@@ -26,26 +24,27 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.List;
 
 import at.markushi.ui.CircleButton;
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HomePageCardStackAdapter;
+import fpt.life.finalproject.adapter.InformationHomePageClickedListener;
 import fpt.life.finalproject.dto.HomePageProfile;
+import fpt.life.finalproject.model.User;
+import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.OnChangeService;
 import fpt.life.finalproject.service.SwipeService;
 
-public class HomepageFragment extends Fragment {
+public class HomepageFragment extends Fragment implements InformationHomePageClickedListener {
 
-//    private Map<String, User> userList;
-//    private List<HomePageProfile> homePageProfileList = new ArrayList<>();
-//    private User currentUser;
     private SwipeService swipeService;
+    private OnChangeService onChangeService;
 
-    private String currentUserId;
-    private Button refreshButton;
-    private ImageView infoButton;
+    private User currentUser;
     private CardStackLayoutManager cardManager;
     private HomePageCardStackAdapter cardAdapter;
     private CardStackView cardStackView;
-    private CircleButton likeButton, nopeButton;
+    private CircleButton likeButton, nopeButton, refreshButton;
     private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
 
@@ -64,7 +63,9 @@ public class HomepageFragment extends Fragment {
     }
 
     private void init(View root) {
-        swipeService = new SwipeService();
+        currentUser = ((MainActivity)getActivity()).getCurrentUser();
+        swipeService = new SwipeService(currentUser);
+        onChangeService = new OnChangeService();
         cardStackView = root.findViewById(R.id.homepage_view_card_stack);
         cardManager = new CardStackLayoutManager(this.getContext(), new CardStackListener() {
             @Override
@@ -112,38 +113,19 @@ public class HomepageFragment extends Fragment {
         cardManager.setDirections(Direction.HORIZONTAL);
         cardManager.setCanScrollHorizontal(true);
         cardManager.setCanScrollVertical(false);
-        cardAdapter = new HomePageCardStackAdapter(swipeService.getHomePageProfileList());
+        cardAdapter = new HomePageCardStackAdapter(swipeService.getHomePageProfileList(),this);
         cardStackView.setLayoutManager(cardManager);
         cardStackView.setAdapter(cardAdapter);
         cardStackView.setItemAnimator(new DefaultItemAnimator());
         //like button
         likeButton = root.findViewById(R.id.like_btn);
-        likeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoLike();
-            }
-        });
+        likeButton.setOnClickListener(v -> autoLike());
         //nope button
         nopeButton = root.findViewById(R.id.nope_btn);
-        nopeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoNope();
-            }
-        });
+        nopeButton.setOnClickListener(v -> autoNope());
         //refresh button
         refreshButton = root.findViewById(R.id.refresh_btn);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingProfile(root);
-            }
-        });
-
-        //get bundle current user id
-        currentUserId = getArguments().getString("currentUserId");
-
+        refreshButton.setOnClickListener(v -> loadingProfile(root));
 
         loadingProfile(root);
 
@@ -163,6 +145,8 @@ public class HomepageFragment extends Fragment {
         locationService.getLastKnownLocation();
 
         loadProgressDialog();
+        swipeService.setUserList(null);
+        //khoi tao countdown
         countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -172,31 +156,17 @@ public class HomepageFragment extends Fragment {
             @Override
             public void onFinish() {
                 if (swipeService.getUserList() == null) {
-                    progressDialog.dismiss();
-                    Log.d("pro1", "timeout");
+                    countDownTimer.start();
                 } else {
-                    swipeService.loadProfiles(currentUserId);
+                    swipeService.loadProfiles();
+                    onChangeService.listenDataUsersOnChange(swipeService,cardAdapter);
                     checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
                     cardAdapter.notifyDataSetChanged();
-                    moreTimeToDismissDialog(progressDialog, 1000);
+                    progressDialog.dismiss();
                 }
             }
-        }.start();
+        };
         swipeService.getAllDocument(countDownTimer);
-    }
-
-    private void moreTimeToDismissDialog(ProgressDialog progressDialog, int time) {
-        CountDownTimer countDownTimer = new CountDownTimer(time, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                progressDialog.dismiss();
-            }
-        }.start();
     }
 
     private void loadProgressDialog() {
@@ -227,4 +197,10 @@ public class HomepageFragment extends Fragment {
         cardStackView.swipe();
     }
 
+    @Override
+    public void onInformationHomePageClickListener(String otherUid) {
+        Intent i = new Intent(getContext(), ViewOtherProfile_Activity.class);
+        i.putExtra("otherUid",otherUid);
+        startActivity(i);
+    }
 }

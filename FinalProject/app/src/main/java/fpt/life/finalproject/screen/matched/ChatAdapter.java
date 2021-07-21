@@ -66,7 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         }
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(listChatted.get(getAdapterPosition()).getUid());
+            onItemListener.onItemClick(listChatted.get(getAdapterPosition()).getOtherUid());
         }
     }
     public interface OnItemListener{

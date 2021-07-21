@@ -1,9 +1,9 @@
 package fpt.life.finalproject;
 
-import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -22,46 +22,51 @@ import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.homepage.HomepageFragment;
 import fpt.life.finalproject.screen.matched.MatchedFragment;
 import fpt.life.finalproject.screen.myprofile.MyProfileFragment;
-import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.OnChangeService;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LocationService locationService;
+//    final String CHECK_ONLINE_STATUS_TASK = "CHECK_ONLINE_STATUS_TASK";
     private ImageView profileImageView;
     private ImageView matchedImageView;
     private ImageView logoImageView;
+    private ImageView notifyCircleImageView;
     private User currentUser;
+    private OnChangeService onChangeService;
 
     private MyProfileFragment myProfileFragment;
     private MatchedFragment matchedFragment;
     private HomepageFragment homepageFragment;
-    private ProgressDialog progressDialog;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findView();
-        loadProgressDialog();
-        getCurrentUser(FirebaseAuth.getInstance().getUid());
-
+        onChangeService = new OnChangeService(this);
+        onChangeService.listenOnlineUsersOnChange();
+        onChangeService.listenMatchedUsersNotify();
+        onChangeService.listenMatchedUsersIsKnown();
+//        loadProgressDialog();
+        getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, myProfileFragment)
                     .commit();
             profileImageView.setColorFilter(Color.rgb(253, 76, 103));
-            matchedImageView.setColorFilter(Color.rgb(87, 87, 87));
+            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
         });
 
         matchedImageView.setOnClickListener(view -> {
+            onChangeService.updateMatchedUserIsKnown();
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, matchedFragment)
                     .commit();
-            profileImageView.setColorFilter(Color.rgb(87, 87, 87));
+            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
             matchedImageView.setColorFilter(Color.rgb(253, 76, 103));
         });
 
@@ -70,15 +75,18 @@ public class MainActivity extends AppCompatActivity {
                     .setReorderingAllowed(true)
                     .replace(R.id.frame_layout_main_fragment, homepageFragment)
                     .commit();
-            profileImageView.setColorFilter(Color.rgb(87, 87, 87));
-            matchedImageView.setColorFilter(Color.rgb(87, 87, 87));
+            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
+            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
         });
     }
+
+
 
     private void findView() {
         profileImageView = findViewById(R.id.image_view_profile);
         matchedImageView = findViewById(R.id.image_view_matched);
         logoImageView = findViewById(R.id.image_view_logo);
+        notifyCircleImageView = findViewById(R.id.image_view_notify_circle);
     }
 
     private void initFragment() {
@@ -88,32 +96,27 @@ public class MainActivity extends AppCompatActivity {
         sendDataToHomePage();
         sendDataToMatched();
         sendDataToMyProfile();
-        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.frame_layout_main_fragment, homepageFragment)
                 .commit();
     }
 
-    private void loadProgressDialog() {
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_dialog);
-        progressDialog.setCancelable(false);
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    public User getCurrentUser() {
+        return currentUser;
     }
 
-    public void getCurrentUser(String currentUserId) {
+    public void getCurrentUserFromDatabase(String currentUserId) {
 
         db.collection("users").document(currentUserId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
-                        currentUser = task.getResult().toObject(User.class);
-                        progressDialog.dismiss();
-
-                        initFragment();
+                        if (task.isSuccessful()){
+                            currentUser = task.getResult().toObject(User.class);
+                            initFragment();
+                        }
                     }
                 });
     }
@@ -149,5 +152,22 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    protected void onResume() {
+        onChangeService.upDateStatus(true);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        onChangeService.upDateStatus(false);
+        super.onPause();
+    }
+
+    public void setNotifyCircleVisibility(boolean isNotify) {
+        int visibility = isNotify ? View.VISIBLE : View.GONE;
+        notifyCircleImageView.setVisibility(visibility);
     }
 }
