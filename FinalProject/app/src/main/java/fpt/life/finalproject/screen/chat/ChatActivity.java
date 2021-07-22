@@ -66,12 +66,16 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
 
     private MessageAdapter messageAdapter;
 
+    private String currentUid, otherUid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        chatService = new ChatService(this, "SQYPZpR4mFOhTe0qdeF2lCHXCk83", "EqVdSFIZhmbfDdTVJSbXb1hB78l1");
+        getUid();
+
+        chatService = new ChatService(this, currentUid, otherUid);
         initComponents();
         initRecyclerView();
 //        chatService.getChatRoomInfo();
@@ -136,6 +140,11 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
                 .load(url)
                 .centerCrop()
                 .into(imageView);
+    }
+
+    private void getUid() {
+        currentUid = this.getIntent().getStringExtra("currentUid");
+        otherUid = this.getIntent().getStringExtra("otherUid");
     }
 
     @Override

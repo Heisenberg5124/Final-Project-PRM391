@@ -1,8 +1,6 @@
 package fpt.life.finalproject.screen.myprofile;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,7 +9,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.SearchView;
@@ -28,7 +25,6 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.HobbyAdapter;
 import fpt.life.finalproject.adapter.RecyclerItemSelectedListener;
 import fpt.life.finalproject.model.Hobby;
-import fpt.life.finalproject.screen.register.ui.RegisterHobbiesFragmentDirections;
 import fpt.life.finalproject.util.ButtonUtil;
 
 public class EditHobbiesActivity extends AppCompatActivity implements RecyclerItemSelectedListener {
@@ -61,7 +57,6 @@ public class EditHobbiesActivity extends AppCompatActivity implements RecyclerIt
         onClickButtonDone();
     }
     private void onClickButtonDone() {
-
         buttonDone.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("editedHobbies",editHobbies);

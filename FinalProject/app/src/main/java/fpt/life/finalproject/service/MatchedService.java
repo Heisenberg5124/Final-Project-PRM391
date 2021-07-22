@@ -10,12 +10,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
 import fpt.life.finalproject.dto.MatchedProfile;
-import fpt.life.finalproject.screen.matched.OnInforAnotherUserChange;
+import fpt.life.finalproject.adapter.OnInforAnotherUserChange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,28 +45,15 @@ public class MatchedService {
             for (DocumentChange document : value.getDocumentChanges()) {
                 ArrayList<String> sender = (ArrayList<String>) document.getDocument().get("sender");
                 String otherUid = sender.get(0).equals(currentUserID) ? sender.get(1) : sender.get(0);
-                if (document.getType() == DocumentChange.Type.REMOVED) {
-                    //Todo:Remove chưa handle được
-                    Log.d("checkRemove", otherUid);
-                    String typeUser = (checkExistProfile(otherUid,chatProfileList)!= -1) ? "Chatted" : "Matched";
-                    MatchedProfile removedProfile = typeUser.equals("Chatted") ? chatProfileList.get(checkExistProfile(otherUid,chatProfileList)):
-                            matchedProfileList.get(checkExistProfile(otherUid,matchedProfileList));
-                    onInforAnotherUserChange.unMatched(otherUid,typeUser,removedProfile);
+                Map<String, Object> lastMessageMap = (Map<String, Object>) document.getDocument().get("lastMessage");
+                if (!(lastMessageMap.get("id").toString().equals("0000"))) {
+                    String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Send a image to you";
+                    Log.d("checkRemove", lastMessageMap.get("id").toString());
+                    getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, lastMessage, lastMessageMap.get("id").toString(), timestampToString((Timestamp) lastMessageMap.get("sendTime")), (Boolean) lastMessageMap.get("isSeen"), lastMessageMap.get("sender").toString());
                 } else {
-                    Map<String, Object> lastMessageMap = (Map<String, Object>) document.getDocument().get("lastMessage");
-                    if (!(lastMessageMap.get("id").toString().equals("0000"))) {
-//                        docRefGetMessages = db.collection("matched_users").document(document.getDocument().getId()).collection("messages")
-//                                .document((String) document.getDocument().get("lastMessage"));
-//                        docRefGetMessages.addSnapshotListener((valueUser, errorUser) -> {
-                        String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Send a image to you";
-                        Log.d("checkRemove", lastMessageMap.get("id").toString());
-                        getAnotherMatchedInfo(onInforAnotherUserChange,otherUid, lastMessage, lastMessageMap.get("id").toString(), timestampToString((Timestamp) lastMessageMap.get("sendTime")), lastMessageMap.get("sender").toString());
-                    } else {
-                        getAnotherMatchedInfo(onInforAnotherUserChange, otherUid,null, null, null, null);
-                    }
+                    getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, null, null, null, null, null);
                 }
             }
-
         });
     }
 
@@ -75,16 +61,14 @@ public class MatchedService {
         Long distanceTime = System.currentTimeMillis() / 1000 - timestamp.getSeconds();
         SimpleDateFormat formatter;
         if (distanceTime < 86400) {
-            formatter = new SimpleDateFormat("HH:mm");
+            formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
         } else {
-            formatter = new SimpleDateFormat("dd MMM");
+            formatter = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
         }
-        Log.d("CheckDate",timestamp.getSeconds()+" ");
-        Log.d("CheckDate",timestamp.toString());
-        return formatter.format(new Date(timestamp.getSeconds()));
+        return formatter.format(timestamp.toDate());
     }
 
-    private void getAnotherMatchedInfo(OnInforAnotherUserChange onInforAnotherUserChange,String uid, String lastMessage, String lastMessageID, String timeLastMessage, String sender) {
+    private void getAnotherMatchedInfo(OnInforAnotherUserChange onInforAnotherUserChange, String uid, String lastMessage, String lastMessageID, String timeLastMessage, Boolean isSeen, String sender) {
         DocumentReference docRefGetChatInfo = db.collection("users").document(uid);
         docRefGetChatInfo.addSnapshotListener((valueGetChatInfo, error1) -> {
 
@@ -93,12 +77,8 @@ public class MatchedService {
 
             MatchedProfile isMatchedProfile = posInMatchedProfile != -1 ? matchedProfileList.get(posInMatchedProfile) : null;
             MatchedProfile isChattedProfile = posInChattedProfile != -1 ? chatProfileList.get(posInChattedProfile) : null;
-            String senderName = null;
-            if (sender != null) {
-                senderName = sender.equals(currentUserID) ? currentUserName : (String) valueGetChatInfo.get("name");
-            }
             ArrayList<String> photoUrls = (ArrayList<String>) valueGetChatInfo.get("photoUrls");
-            MatchedProfile Profile = new MatchedProfile(uid, (String) valueGetChatInfo.get("name"), photoUrls.get(0), lastMessage, lastMessageID, timeLastMessage, (Boolean) valueGetChatInfo.get("onlineStatus"), senderName);
+            MatchedProfile Profile = new MatchedProfile(uid, (String) valueGetChatInfo.get("name"), photoUrls.get(0), lastMessage, lastMessageID, timeLastMessage, (Boolean) valueGetChatInfo.get("onlineStatus"), isSeen, sender);
 
             if (isMatchedProfile != null) {
                 // check this uid had change they online status or name
@@ -106,8 +86,8 @@ public class MatchedService {
                     onInforAnotherUserChange.onIsOnlineChange(posInMatchedProfile, (Boolean) valueGetChatInfo.get("onlineStatus"), "Matched");
                 else if (checkChangeName((String) valueGetChatInfo.get("name"), isMatchedProfile))
                     onInforAnotherUserChange.onNameChange(posInMatchedProfile, (String) valueGetChatInfo.get("name"), "Matched");
-                    else if (lastMessageID != null) {
-                    onInforAnotherUserChange.onNewChattedProfile(posInMatchedProfile,Profile);
+                else if (lastMessageID != null) {
+                    onInforAnotherUserChange.onNewChattedProfile(posInMatchedProfile, Profile);
                     matchedProfileList.remove(posInMatchedProfile);
                     chatProfileList.add(0, Profile);
                 }
@@ -121,8 +101,7 @@ public class MatchedService {
                     else if (checkChangeName((String) valueGetChatInfo.get("name"), isChattedProfile))
                         onInforAnotherUserChange.onNameChange(posInChattedProfile, (String) valueGetChatInfo.get("name"), "Chatted");
                         //check this uid first message
-                        else if (checkChangeLastMessageByID(lastMessageID, isChattedProfile)) {
-                        Log.d("CheckChange","Change");
+                    else if (checkChangeLastMessageByID(lastMessageID, isChattedProfile)) {
                         isChattedProfile.setLastMessage(lastMessage);
                         isChattedProfile.setLastMessageID(lastMessageID);
                         isChattedProfile.setTimeLastMessage(timeLastMessage);
@@ -130,38 +109,33 @@ public class MatchedService {
                         chatProfileList.remove(isChattedProfile);
                         chatProfileList.add(0, Profile);
                     }
-                }
-                else if (Profile.getLastMessage()==null){
+                } else if (Profile.getLastMessage() == null) {
                     onInforAnotherUserChange.onNewMatchedProfile(Profile);
                     matchedProfileList.add(Profile);
-                }else {
-                   onInforAnotherUserChange.onNewChattedProfile(-1,Profile);
-                    chatProfileList.add(0,Profile);
-                    Log.d("CheckSize", " " + chatProfileList.size());
+                } else {
+                    onInforAnotherUserChange.onNewChattedProfile(-1, Profile);
+                    chatProfileList.add(0, Profile);
                 }
         });
     }
 
     private int checkExistProfile(String uid, ArrayList<MatchedProfile> ProfileList) {
-        for (int i=0;i<ProfileList.size();i++) {
+        for (int i = 0; i < ProfileList.size(); i++) {
             if (ProfileList.get(i).getOtherUid().equals(uid)) return i;
         }
         return -1;
     }
 
     private Boolean checkChangeName(String newName, MatchedProfile matchedProfile) {
-        if (!matchedProfile.getOtherUserName().equals(newName)) return true;
-        return false;
+        return !matchedProfile.getOtherUserName().equals(newName);
     }
 
     private Boolean checkChangeLastMessageByID(String newMessageID, MatchedProfile matchedProfile) {
-        if (!matchedProfile.getLastMessageID().equals(newMessageID)) return true;
-        return false;
+        return !matchedProfile.getLastMessageID().equals(newMessageID);
     }
 
     private Boolean checkChangeOnlineStatus(Boolean newOnlineStatus, MatchedProfile Profile) {
-        if (Profile.getOnlineStatus() != newOnlineStatus) return true;
-        return false;
+        return Profile.getOnlineStatus() != newOnlineStatus;
     }
 }
 

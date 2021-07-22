@@ -1,6 +1,7 @@
-package fpt.life.finalproject.screen.matched;
+package fpt.life.finalproject.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,9 @@ public class ProfileMatchAdapter extends RecyclerView.Adapter<ProfileMatchAdapte
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
         TextView text_view_name_matched_view = holder.text_view_name_matched;
         text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
+        ImageView isOnline = holder.imageViewIsOnline;
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        isOnline.setColorFilter(Color.parseColor(colorStatus));
     }
     public void filterProfileList(ArrayList<MatchedProfile> filteredList) {
         listMatchedProfile = filteredList;
@@ -57,9 +61,11 @@ public class ProfileMatchAdapter extends RecyclerView.Adapter<ProfileMatchAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView avt_matched;
         public TextView text_view_name_matched;
+        public ImageView imageViewIsOnline;
         public ViewHolder(View itemView) {
             super(itemView);
             avt_matched = itemView.findViewById(R.id.image_view_avt_match_profile);
+            imageViewIsOnline = itemView.findViewById(R.id.isOnline_show_profile_match);
             text_view_name_matched =itemView.findViewById(R.id.text_view_name_profile_match);
             itemView.setOnClickListener(this);
         }

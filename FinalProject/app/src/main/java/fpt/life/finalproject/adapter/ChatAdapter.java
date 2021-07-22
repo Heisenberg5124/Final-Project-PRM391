@@ -1,7 +1,8 @@
-package fpt.life.finalproject.screen.matched;
+package fpt.life.finalproject.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,20 @@ import java.util.List;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
-import fpt.life.finalproject.service.MatchedService;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<MatchedProfile> listChatted;
     private OnItemListener onItemListener;
-    public ChatAdapter(List<MatchedProfile> listChatted, OnItemListener onItemListener) {
+    private TextView name;
+    private TextView lastMessage;
+    private String currentUserName;
+
+    public ChatAdapter(List<MatchedProfile> listChatted, OnItemListener onItemListener, String currentUserName) {
         this.listChatted = listChatted;
         this.onItemListener = onItemListener;
+        this.currentUserName = currentUserName;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,13 +47,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         MatchedProfile matchedProfile = listChatted.get(position);
         ImageView avtChatted = holder.avtChatted;
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avtChatted);
-        TextView name = holder.textViewNameChatted;
+        name = holder.textViewNameChatted;
         name.setText(matchedProfile.getOtherUserName());
-        TextView lastMessage = holder.textViewLastMessage;
-        lastMessage.setText(String.format("%s: %s • %s",matchedProfile.getSender(), checkLengthMessage(matchedProfile.getSender(),matchedProfile.getLastMessage()) , matchedProfile.getTimeLastMessage()));
+        lastMessage = holder.textViewLastMessage;
+        lastMessage.setText(String.format("%s: %s • %s", setSenderName(matchedProfile.getSender(),matchedProfile),
+                checkLengthMessage(setSenderName(matchedProfile.getSender(), matchedProfile),
+                        matchedProfile.getLastMessage()), matchedProfile.getTimeLastMessage()));
         ImageView isOnline = holder.imageViewIsOnline;
         String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
         isOnline.setColorFilter(Color.parseColor(colorStatus));
+        setColorTextView(matchedProfile);
     }
 
     @Override
@@ -55,30 +64,54 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         return listChatted.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView avtChatted;
         public TextView textViewNameChatted;
         public TextView textViewLastMessage;
         public ImageView imageViewIsOnline;
+
         public ViewHolder(View itemView) {
             super(itemView);
             avtChatted = itemView.findViewById(R.id.image_view_avt_chatted);
             imageViewIsOnline = itemView.findViewById(R.id.isOnline_show_chat);
-            textViewNameChatted =itemView.findViewById(R.id.text_view_name_chatted);
+            textViewNameChatted = itemView.findViewById(R.id.text_view_name_chatted);
             textViewLastMessage = itemView.findViewById(R.id.text_view_lastmessage_chatted);
             itemView.setOnClickListener(this);
         }
+
         @Override
         public void onClick(View v) {
             onItemListener.onItemClick(listChatted.get(getAdapterPosition()).getOtherUid());
         }
     }
-    public interface OnItemListener{
+
+    public interface OnItemListener {
         void onItemClick(String uid);
     }
-    private String checkLengthMessage(String senderName, String message){
+
+    private String checkLengthMessage(String senderName, String message) {
         if (message == null) return null;
-        if ((senderName.length() + message.length())> 32) return message.substring(0,28-senderName.length())+"...";
+        if ((senderName.length() + message.length()) > 32)
+            return message.substring(0, 28 - senderName.length()) + "...";
         else return message;
     }
+
+    private void setColorTextView(MatchedProfile matchedProfile){
+        if (!matchedProfile.getIsSeen() && matchedProfile.getOtherUid().equals(matchedProfile.getSender())) {
+            name.setTextColor(Color.parseColor("#000000"));
+            lastMessage.setTextColor(Color.parseColor("#000000"));
+        } else {
+            name.setTextColor(Color.parseColor("#808080"));
+            lastMessage.setTextColor(Color.parseColor("#808080"));
+        }
+    }
+
+    private String setSenderName(String sender, MatchedProfile matchedProfile){
+        if (!sender.equals(matchedProfile.getOtherUid())) {
+            Log.d("CheckName",matchedProfile.getIsSeen()+ " ");
+            return currentUserName;
+        }
+        return matchedProfile.getOtherUserName();
+    }
+
 }

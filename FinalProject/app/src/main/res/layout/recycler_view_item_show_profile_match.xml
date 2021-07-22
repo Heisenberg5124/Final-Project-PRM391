@@ -8,20 +8,26 @@
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="250dp">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image_view_avt_match_profile"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:scaleType="centerCrop"
+            app:shapeAppearance="@style/Circle"
             tools:srcCompat="@tools:sample/avatars" />
-    </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/isOnline_show_profile_match"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="45dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_circle_profile" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/text_view_name_profile_match"
@@ -31,4 +37,5 @@
         android:layout_marginLeft="10dp"
         android:text="TextView"
         android:textSize="18sp" />
+
 </LinearLayout>

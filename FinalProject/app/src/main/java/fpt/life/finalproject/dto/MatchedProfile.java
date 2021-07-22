@@ -1,7 +1,5 @@
 package fpt.life.finalproject.dto;
 
-import com.google.firebase.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +18,6 @@ public class MatchedProfile {
     private String lastMessageID;
     private String timeLastMessage;
     private Boolean onlineStatus;
+    private Boolean isSeen;
     private String sender;
 }

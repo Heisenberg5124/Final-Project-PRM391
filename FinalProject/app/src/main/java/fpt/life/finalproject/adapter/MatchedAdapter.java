@@ -1,4 +1,4 @@
-package fpt.life.finalproject.screen.matched;
+package fpt.life.finalproject.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -41,11 +41,11 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
         MatchedProfile matchedProfile = listMatched.get(position);
         ImageView avt_matched_view = holder.avt_matched;
         Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
-        TextView text_view_name_matched_view = holder.text_view_name_matched;
-        text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
         ImageView isOnline = holder.imageViewIsOnline;
         String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
         isOnline.setColorFilter(Color.parseColor(colorStatus));
+        TextView text_view_name_matched_view = holder.text_view_name_matched;
+        text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
     }
 
     @Override
