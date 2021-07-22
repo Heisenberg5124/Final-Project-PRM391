@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         onChangeService.listenOnlineUsersOnChange();
         onChangeService.listenMatchedUsersNotify();
         onChangeService.listenMatchedUsersIsKnown();
+        onChangeService.upDateStatus(true);
 //        loadProgressDialog();
         getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
         profileImageView.setOnClickListener(view -> {

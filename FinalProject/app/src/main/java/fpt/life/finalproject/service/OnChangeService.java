@@ -82,7 +82,7 @@ public class OnChangeService {
                                 String matchedUid = dc.getDocument().getId();
                                 notifyMatch();
                                 listenMatchedUsersIsKnown();
-                                updateIsNotify(matchedUid,"isNotify",true);
+                                updateIsNotify(matchedUid,"isNotify."+currentUserUid,true);
                             }
                             break;
                     }
@@ -104,6 +104,7 @@ public class OnChangeService {
                 if (task.isSuccessful()){
                     if (task.getResult().size()>0){
                         ((MainActivity)activity).setNotifyCircleVisibility(true);
+                        Log.d("checkMatch0", "ok");
                     }else {
                         listenChatIsSeen();
                     }
@@ -115,13 +116,14 @@ public class OnChangeService {
     private void listenChatIsSeen() {
         db.collection("matched_users")
                 .whereEqualTo("isKnown."+currentUserUid,true)
-                .whereEqualTo("lastMessage.isSeen",true)
+                .whereEqualTo("lastMessage.isSeen",false)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     if (task.getResult().size()>0){
                         ((MainActivity)activity).setNotifyCircleVisibility(true);
+                        Log.d("checkChat0", task.getResult().getDocuments().toString());
                     }else {
                         ((MainActivity)activity).setNotifyCircleVisibility(false);
                     }

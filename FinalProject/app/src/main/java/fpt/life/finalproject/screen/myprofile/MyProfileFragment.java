@@ -39,6 +39,7 @@ import fpt.life.finalproject.dto.MyProfile;
 import fpt.life.finalproject.screen.Login.Login_Activity;
 import fpt.life.finalproject.screen.Login.Profile_Activity;
 import fpt.life.finalproject.service.MyProfileService;
+import fpt.life.finalproject.service.OnChangeService;
 
 public class MyProfileFragment extends Fragment {
     private EditText birthday;
@@ -47,6 +48,7 @@ public class MyProfileFragment extends Fragment {
     private View rootView;
     private MyProfile myProfile;
     MyProfileService myProfileService = new MyProfileService();
+    OnChangeService onChangeService;
     public MyProfileFragment() {
         // Required empty public constructor
     }
@@ -60,7 +62,7 @@ public class MyProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_my_profile, container, false);
-
+        onChangeService = new OnChangeService();
         birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
         logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
         editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
@@ -261,6 +263,7 @@ public class MyProfileFragment extends Fragment {
 
     public void signOut() {
         // [START auth_fui_signout]
+        onChangeService.upDateStatus(false);
         AuthUI.getInstance()
                 .signOut(getActivity())
                 .addOnCompleteListener(task -> {
