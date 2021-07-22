@@ -51,7 +51,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
 
     private ChoosePhotoHelper choosePhotoHelper;
 
-    private  ArrayList<Photo> dbPhotoList = new ArrayList<>();
+    private ArrayList<Photo> dbPhotoList = new ArrayList<>();
     private ArrayList<Photo> photos = new ArrayList<>();
     private EditPhotoService editPhotoService;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -68,8 +68,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
 //        getImageList("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
 ////        getImageList(FirebaseAuth.getInstance().getUid());
 
-        Intent i = new Intent();
-        convertToPhotoList(i.getStringArrayListExtra("imagesListDB"));
+        convertToPhotoList((ArrayList<String>) this.getIntent().getSerializableExtra("imagesListDB"));
         initComponents();
         initRecyclerView();
         initFireBase();
@@ -91,14 +90,14 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
             Log.d("check", updateList.toString());
             loadProgressDialog();
             editPhotoService.uploadEditedImages(updateList, progressDialog);
-            backToMyProfile(updateList.get(0).getPhotoUri());
+            backToMyProfile(updateList);
         });
     }
 
-    private void backToMyProfile(String avaUrl){
+    private void backToMyProfile(ArrayList<Photo> imagePhoto){
         Intent intent = new Intent(EditPhoto_Activity.this, MainActivity.class);
-        intent.putExtra("avatarUrl", avaUrl);
-        Log.d("rrrrr", avaUrl);
+        intent.putExtra("avatarUrl", convertToStringList(imagePhoto));
+//        Log.d("rrrrr", avaUrl);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -234,5 +233,12 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    private ArrayList<String> convertToStringList(ArrayList<Photo> imageList){
+        ArrayList<String> imageListToSendBack = new ArrayList<>();
+        for ( Photo photo : imageList){
+            imageListToSendBack.add(photo.getPhotoUri());
+        }
+        return imageListToSendBack;
     }
 }

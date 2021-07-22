@@ -2,11 +2,9 @@ package fpt.life.finalproject.screen.matched;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -15,12 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fpt.life.finalproject.R;
+import fpt.life.finalproject.adapter.ChatAdapter;
+import fpt.life.finalproject.adapter.MatchedAdapter;
+import fpt.life.finalproject.adapter.OnInforAnotherUserChange;
+import fpt.life.finalproject.adapter.ProfileMatchAdapter;
 import fpt.life.finalproject.dto.MatchedProfile;
 import fpt.life.finalproject.dto.Profile;
 import fpt.life.finalproject.model.Hobby;
+import fpt.life.finalproject.screen.chat.ChatActivity;
 import fpt.life.finalproject.screen.chat.ChatActivity;
 import fpt.life.finalproject.service.MatchedService;
 
@@ -79,7 +83,7 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         rvChatted = (RecyclerView) rootView.findViewById(R.id.RecyclerView_Matched_Chat);
         LinearLayoutManager layoutManagerChatted = new LinearLayoutManager(getActivity());
         rvChatted.setLayoutManager(layoutManagerChatted);
-        chatAdapter = new ChatAdapter(profileChattedList, this);
+        chatAdapter = new ChatAdapter(profileChattedList, this, name);
         rvChatted.setAdapter(chatAdapter);
         //Profile Adapter
         profileMatchAdapter = new ProfileMatchAdapter(profileList,this);
@@ -136,7 +140,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             @Override
             public void onNewMatchedProfile(MatchedProfile matchedProfile) {
                 profileMatchedList.add(matchedProfile);
-//                profileList.add(matchedProfile);
                 matchedAdapter.notifyDataSetChanged();
             }
 
@@ -146,7 +149,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
                     profileChattedList.get(pos).setOtherUserName(newName);
                     chatAdapter.notifyItemChanged(pos);
                 } else {
-                    Log.d("CheckOnlineChatted", " " + profileMatchedList.size());
                     profileMatchedList.get(pos).setOtherUserName(newName);
                     matchedAdapter.notifyItemChanged(pos);
                 }
@@ -155,8 +157,12 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             @Override
             public void onIsOnlineChange(int pos, Boolean isOnline, String typeUser) {
                 if (typeUser.equals("Chatted")) {
-                    Log.d("CheckOnlineChatted", " " + isOnline);
-                } else Log.d("CheckOnlineMatched", " " + isOnline);
+                    profileChattedList.get(pos).setOnlineStatus(isOnline);
+                    chatAdapter.notifyItemChanged(pos);
+                } else {
+                    profileMatchedList.get(pos).setOnlineStatus(isOnline);
+                    matchedAdapter.notifyItemChanged(pos);
+                }
             }
 
             @Override
@@ -173,7 +179,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
                     matchedAdapter.notifyDataSetChanged();
                 }
                 profileChattedList.add(0, matchedProfile);
-//                profileList.add(matchedProfile);
                 chatAdapter.notifyDataSetChanged();
             }
 
@@ -191,6 +196,7 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         };
         matchedService.snapshotMatchUser(onInforAnotherUserChange);
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

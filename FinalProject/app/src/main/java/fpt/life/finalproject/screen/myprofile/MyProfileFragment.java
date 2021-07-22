@@ -131,8 +131,8 @@ public class MyProfileFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(getContext(),"Chua lam",Toast.LENGTH_LONG).show();//TODO: Action Edit Image
                 Intent intent = new Intent(getContext(), EditPhoto_Activity.class);
+                intent.putExtra("imagesListDB", myProfile.getListImage());
                 startActivityForResult(intent,0);
             }
         });
@@ -323,9 +323,8 @@ public class MyProfileFragment extends Fragment {
         }
         if (requestCode==0){
             if (resultCode == RESULT_OK) {
-                url = data.getStringExtra("avatarUrl");
-                Log.d("rrrrrrr", url);
-                updateAva(editAva, url);
+                myProfile.setListImage((ArrayList<String>) data.getSerializableExtra("avatarUrl"));
+                updateAva(editAva, myProfile.getListImage().get(0));
             }
         }
     }

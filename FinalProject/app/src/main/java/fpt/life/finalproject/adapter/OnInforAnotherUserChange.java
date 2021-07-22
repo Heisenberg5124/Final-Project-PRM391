@@ -1,4 +1,4 @@
-package fpt.life.finalproject.screen.matched;
+package fpt.life.finalproject.adapter;
 
 import fpt.life.finalproject.dto.MatchedProfile;
 

@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         onChangeService.listenMatchedUsersIsKnown();
         onChangeService.upDateStatus(true);
 //        loadProgressDialog();
-        getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
+//        getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
 //        loadProgressDialog();
 //        getCurrentUser(FirebaseAuth.getInstance().getUid());
 //        getCurrentUserFromDatabase("1YyOVbEZ9nbclrT9iX5GIRTCboA3");

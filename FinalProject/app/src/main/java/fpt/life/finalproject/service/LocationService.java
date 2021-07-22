@@ -55,7 +55,7 @@ public class LocationService {
         this.context = context;
         this.uid = uid;
         this.documentReference = FirebaseFirestore.getInstance().collection("users")
-                .document(uid);
+                .document("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
         this.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
