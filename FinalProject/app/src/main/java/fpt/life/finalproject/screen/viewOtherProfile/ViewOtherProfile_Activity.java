@@ -98,7 +98,7 @@ public class ViewOtherProfile_Activity extends AppCompatActivity{
             ShapeableImageView oImageView = new ShapeableImageView(this);
             oImageView.setImageResource(R.drawable.logo);
             String url = images.get(i);
-            Picasso.get().load(url).fit().into(oImageView);
+            Picasso.get().load(url).fit().centerCrop().into(oImageView);
             oImageView.setShapeAppearanceModel(oImageView.getShapeAppearanceModel().toBuilder().setAllCornerSizes(15).build());
             oImageView.setStrokeColor(ColorStateList.valueOf(Color.parseColor(color)));
             oImageView.setStrokeWidth(1.5f);

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -152,6 +154,9 @@ public class OnChangeService {
     private void notifyMatch() {
         NotificationManager notificationManager = (NotificationManager) activity
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent appIntent = new Intent(activity, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(activity, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Matched Channel";
             String description = "This is Matched Channel";
@@ -166,6 +171,7 @@ public class OnChangeService {
                 .setContentTitle("New Matched!")
                 .setContentText("Ting Ting! You have new matched. Let's see who it is!")
                 .setSmallIcon(R.drawable.logo)
+                .setContentIntent(pendingIntent)
                 .build();
         if (notificationManager !=null){
             int random = (int)new Date().getTime();
