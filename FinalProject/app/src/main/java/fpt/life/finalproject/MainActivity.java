@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());
 //        loadProgressDialog();
 //        getCurrentUser(FirebaseAuth.getInstance().getUid());
-        getCurrentUserFromDatabase("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
+//        getCurrentUserFromDatabase("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
 
         profileImageView.setOnClickListener(view -> {
             getSupportFragmentManager().beginTransaction()

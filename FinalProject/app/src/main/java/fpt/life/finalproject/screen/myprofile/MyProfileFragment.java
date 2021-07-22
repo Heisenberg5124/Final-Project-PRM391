@@ -49,7 +49,6 @@ public class MyProfileFragment extends Fragment {
     private Button btnEditImage;
     private View rootView;
     private MyProfile myProfile;
-    MyProfileService myProfileService = new MyProfileService();
     OnChangeService onChangeService;
     private ChoosePhotoHelper choosePhotoHelper;
     private ImageView editAva;
@@ -83,9 +82,9 @@ public class MyProfileFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_my_profile, container, false);
         editAva = (ImageView) rootView.findViewById(R.id.imageview_avt_myprofile);
         onChangeService = new OnChangeService();
-        birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
-        logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
-        editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
+        eTxtBirthday = (EditText) rootView.findViewById(R.id.birthday_picker);
+        btnLogout = (Button) rootView.findViewById(R.id.btn_logout_profile);
+        btnEditImage = (Button) rootView.findViewById(R.id.btn_edit_image);
         myProfile = getArguments().getParcelable("myProfile");
         initComponent();
         initData();
