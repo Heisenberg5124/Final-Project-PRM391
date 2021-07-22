@@ -125,7 +125,11 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         nopeButton.setOnClickListener(v -> autoNope());
         //refresh button
         refreshButton = root.findViewById(R.id.refresh_btn);
-        refreshButton.setOnClickListener(v -> loadingProfile(root));
+        refreshButton.setOnClickListener(v -> {
+            currentUser = ((MainActivity)getActivity()).getCurrentUser();
+            swipeService.setCurrentUser(currentUser);
+            loadingProfile(root);
+        });
 
         loadingProfile(root);
 
