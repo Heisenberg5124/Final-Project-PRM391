@@ -1,5 +1,6 @@
 package fpt.life.finalproject.screen.matched;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,7 +21,10 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
 import fpt.life.finalproject.dto.Profile;
 import fpt.life.finalproject.model.Hobby;
+import fpt.life.finalproject.screen.chat.ChatActivity;
 import fpt.life.finalproject.service.MatchedService;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemListener, ChatAdapter.OnItemListener ,ProfileMatchAdapter.OnItemListener{
     private ArrayList<MatchedProfile> profileList = new ArrayList<>();
@@ -118,8 +123,12 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         return filteredProfileList;
     }
     @Override
-    public void onItemClick(String uid) {
+    public void onItemClick(String otherUid) {
 //        Todo: intent to another screen
+        Intent intent = new Intent(getContext(), ChatActivity.class);
+        intent.putExtra("currentUid", uid);
+        intent.putExtra("otherUid", otherUid);
+        startActivityForResult(intent, 100);
     }
 
     private void getData() {
@@ -181,5 +190,15 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             }
         };
         matchedService.snapshotMatchUser(onInforAnotherUserChange);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            if (resultCode == RESULT_OK) {
+                Log.d("Intent", "onActivityResult: " + data.getSerializableExtra("unmatchedUid"));
+            }
+        }
     }
 }
