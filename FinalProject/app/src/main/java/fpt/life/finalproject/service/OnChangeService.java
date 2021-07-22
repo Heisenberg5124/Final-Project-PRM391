@@ -82,7 +82,7 @@ public class OnChangeService {
                                 String matchedUid = dc.getDocument().getId();
                                 notifyMatch();
                                 listenMatchedUsersIsKnown();
-                                updateIsNotify(matchedUid,"isNotify",true);
+                                updateIsNotify(matchedUid,"isNotify."+currentUserUid,true);
                             }
                             break;
                     }
@@ -104,6 +104,7 @@ public class OnChangeService {
                 if (task.isSuccessful()){
                     if (task.getResult().size()>0){
                         ((MainActivity)activity).setNotifyCircleVisibility(true);
+                        Log.d("checkMatch0", "ok");
                     }else {
                         listenChatIsSeen();
                     }
@@ -115,13 +116,14 @@ public class OnChangeService {
     private void listenChatIsSeen() {
         db.collection("matched_users")
                 .whereEqualTo("isKnown."+currentUserUid,true)
-                .whereEqualTo("lastMessage.isSeen",true)
+                .whereEqualTo("lastMessage.isSeen",false)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     if (task.getResult().size()>0){
                         ((MainActivity)activity).setNotifyCircleVisibility(true);
+                        Log.d("checkChat0", task.getResult().getDocuments().toString());
                     }else {
                         ((MainActivity)activity).setNotifyCircleVisibility(false);
                     }
@@ -205,7 +207,9 @@ public class OnChangeService {
     }
 
     public void listenOnlineUsersOnChange() {
-        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("users")
+                .whereArrayContains("likedList",currentUserUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException error) {
@@ -217,21 +221,10 @@ public class OnChangeService {
                     switch (dc.getType()) {
                         case MODIFIED:
                             User user = dc.getDocument().toObject(User.class);
-                            Log.d("checkvinhboi", dc.getDocument().getData().toString());
                             checkOnlineStatus(user);
                             break;
                     }
                 }
-            }
-        });
-
-        db.collection("matched_users")
-                .document("h4Omg5EVUZgUHyrisu1RP4JKB0P2_ivjzkRAKorZIR6zxaVazFrYtYE32")
-                .collection("messages")
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-                Log.d("checkvinhboii", task.getResult().size()+"");
             }
         });
     }

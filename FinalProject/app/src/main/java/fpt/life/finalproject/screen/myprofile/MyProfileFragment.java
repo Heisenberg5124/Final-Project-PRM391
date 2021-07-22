@@ -39,6 +39,7 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MyProfile;
 import fpt.life.finalproject.screen.Login.Login_Activity;
 import fpt.life.finalproject.service.MyProfileService;
+import fpt.life.finalproject.service.OnChangeService;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -48,6 +49,8 @@ public class MyProfileFragment extends Fragment {
     private Button btnEditImage;
     private View rootView;
     private MyProfile myProfile;
+    MyProfileService myProfileService = new MyProfileService();
+    OnChangeService onChangeService;
     private ChoosePhotoHelper choosePhotoHelper;
     private ImageView editAva;
     private String url;
@@ -79,6 +82,10 @@ public class MyProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_my_profile, container, false);
         editAva = (ImageView) rootView.findViewById(R.id.imageview_avt_myprofile);
+        onChangeService = new OnChangeService();
+        birthday = (EditText) rootView.findViewById(R.id.birthday_picker);
+        logout = (Button) rootView.findViewById(R.id.btn_logout_profile);
+        editImage = (Button) rootView.findViewById(R.id.btn_edit_image);
         myProfile = getArguments().getParcelable("myProfile");
         initComponent();
         initData();
@@ -326,6 +333,7 @@ public class MyProfileFragment extends Fragment {
 
     public void signOut() {
         // [START auth_fui_signout]
+        onChangeService.upDateStatus(false);
         AuthUI.getInstance()
                 .signOut(getActivity())
                 .addOnCompleteListener(task -> {
