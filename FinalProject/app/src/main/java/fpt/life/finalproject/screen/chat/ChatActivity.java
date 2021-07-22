@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,12 +19,15 @@ import android.widget.TextView;
 
 import com.aminography.choosephotohelper.ChoosePhotoHelper;
 import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import at.markushi.ui.CircleButton;
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.MessageAdapter;
 import fpt.life.finalproject.dto.chat.ChatRoom;
+import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.chat.ChatService;
 import fpt.life.finalproject.service.chat.OnFirebaseListener;
 
@@ -71,7 +75,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        chatService = new ChatService(this, "SQYPZpR4mFOhTe0qdeF2lCHXCk83", "EqVdSFIZhmbfDdTVJSbXb1hB78l1");
+        chatService = new ChatService(this, "Xqg9lJtpqxWshwhdOuVHOTCcL173", "Z7sJqYLoCbhxGPU8dzX4VXehaZe2");
         initComponents();
         initRecyclerView();
 //        chatService.getChatRoomInfo();
@@ -96,6 +100,9 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
 
         imageViewSendMessage.setOnClickListener(view -> onButtonSendTextClick());
         buttonChatSendPhoto.setOnClickListener(view -> onButtonSendImageClick());
+        imageViewChatBack.setOnClickListener(view -> onBack());
+        imageViewChatInfo.setOnClickListener(view -> navigateOtherProfile());
+        imageViewChatUnmatched.setOnClickListener(view -> onUnmatchedClick(chatService.getChatRoom()));
     }
 
     private void initRecyclerView() {
@@ -138,6 +145,29 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
                 .into(imageView);
     }
 
+    private void navigateOtherProfile() {
+        Intent i = new Intent(this, ViewOtherProfile_Activity.class);
+        i.putExtra("otherUid", chatService.getOtherUid());
+        startActivity(i);
+    }
+
+    private void onBack() {
+        finish();
+    }
+
+    private void onUnmatchedClick(ChatRoom chatRoom) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Unmatched")
+                .setMessage("Do you want unmatched " + chatRoom.getOtherName() + "?")
+                .setNegativeButton(getString(R.string.decline), (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setPositiveButton(getString(R.string.accept), ((dialog, which) -> {
+                    chatService.unmatched();
+                }))
+                .show();
+    }
+
     @Override
     public void onCompleteLoadChatRoomInfo(ChatRoom chatRoom) {
         setUIChatRoomInfo(chatRoom);
@@ -153,6 +183,14 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         Log.d("Message", "seenAllMessagesUI: ");
         messageAdapter.notifyDataSetChanged();
         recyclerViewChatMessages.scrollToPosition(chatService.getMessages().size() - 1);
+    }
+
+    @Override
+    public void onCompleteUnmatched(ChatRoom chatRoom) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("unmatchedUid", chatRoom.getOtherUid());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override

@@ -2,6 +2,7 @@ package fpt.life.finalproject.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.chat.Message;
+import fpt.life.finalproject.screen.viewOtherProfile.FullAva;
+import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -87,6 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             setShowTime(position, viewHolderMyMessage.textViewMyTimeSend);
 
             viewHolderMyMessage.textViewMyMessage.setOnClickListener(view -> onClickTextMessage(position));
+            viewHolderMyMessage.imageViewMyMessage.setOnClickListener(view -> onClickImageMessage(message.getImageUrl()));
         } else {
             ViewHolderOtherMessage viewHolderOtherMessage = (ViewHolderOtherMessage) holder;
             LinearLayout layout = viewHolderOtherMessage.itemTextChat;
@@ -103,7 +107,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
             setShowTime(position, viewHolderOtherMessage.textViewOtherTimeSend);
 
             viewHolderOtherMessage.textViewOtherMessage.setOnClickListener(view -> onClickTextMessage(position));
+
+            viewHolderOtherMessage.imageViewOtherMessage.setOnClickListener(view -> onClickImageMessage(message.getImageUrl()));
         }
+    }
+
+    private void onClickImageMessage(String imageUrl) {
+        Intent i  = new Intent(activity, FullAva.class);
+        i.putExtra("avaUrl", imageUrl);
+        activity.startActivity(i);
     }
 
     private void onClickTextMessage(int position) {

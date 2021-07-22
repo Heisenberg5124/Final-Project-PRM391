@@ -164,7 +164,13 @@ public class ChatService {
                             }
                         }
                         firebaseListener.onCompleteLoadMessages(chatRoom);
-                        seenAllMessages();
+                        firebaseFirestore.collection("matched_users").document(generateMatchedUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (!((Map<String, Object>) task.getResult().get("lastMessage")).get("id").equals("0000"))
+                                    seenAllMessages();
+                            }
+                        });
                     }
                 });
     }
@@ -229,5 +235,19 @@ public class ChatService {
                 firebaseListener.onChangeChatRoomInfo(chatRoom);
             }
         });
+    }
+
+    public void unmatched(){
+        /*String matchedUid = generateMatchedUid();
+        firebaseFirestore.collection("matched_users").document(matchedUid).delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful())
+                            firebaseListener.onCompleteUnmatched(chatRoom);
+                    }
+                });*/
+        firebaseListener.onCompleteUnmatched(chatRoom);
+        Log.d("Intent", "onActivityResult: ");
     }
 }

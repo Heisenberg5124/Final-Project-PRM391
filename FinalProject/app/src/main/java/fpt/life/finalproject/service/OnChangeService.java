@@ -233,11 +233,4 @@ public class OnChangeService {
         Log.d("checkOnline", user.getUid() + ": " + user.isOnlineStatus());
     }
 
-    private void unmatch(String otherUid){
-        String matchedUid = currentUserUid.compareTo(otherUid) <= 0
-                ? currentUserUid + "_" + otherUid
-                : otherUid + "_" + currentUserUid;
-        db.collection("matched_users").document(matchedUid).delete();
-    }
-
 }

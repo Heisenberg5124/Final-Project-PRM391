@@ -66,9 +66,9 @@ public class ViewOtherProfile_Activity extends AppCompatActivity{
         bio = (TextView) findViewById(R.id.txt_introduce);
         imageAva = (ImageView) findViewById(R.id.img_avata);
         imageBack = (ImageView) findViewById(R.id.image_view_back) ;
-//        Intent i = new Intent();
-//        getOtherUser(i.getStringExtra("otherUid"));
-        getOtherUser("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
+        Intent i = getIntent();
+        getOtherUser(i.getStringExtra("otherUid"));
+//        getOtherUser("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
 
     }
 
