@@ -120,9 +120,15 @@ public class SwipeService {
                 && isGenderIWant(anotherUser)
                 && isGenderTheyWant(anotherUser)
                 && isAgeIWant(anotherUser)
+                && !isLocationNull(anotherUser)
                 && isInDistanceIWant(anotherUser)
                 && !isInLikedList(anotherUser)
                 && !isInDislikedList(anotherUser);
+
+    }
+
+    private boolean isLocationNull(User anotherUser) {
+        return anotherUser.getLocation() == null;
     }
 
     private boolean isDuplicateCurrentId(User anotherUser) {
