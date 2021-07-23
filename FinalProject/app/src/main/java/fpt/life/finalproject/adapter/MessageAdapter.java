@@ -35,7 +35,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 public class MessageAdapter extends RecyclerView.Adapter {
 
     private ArrayList<Message> messages;

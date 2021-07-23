@@ -175,6 +175,8 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
     private void getUid() {
         currentUid = this.getIntent().getStringExtra("currentUid");
         otherUid = this.getIntent().getStringExtra("otherUid");
+        /*currentUid = "EqVdSFIZhmbfDdTVJSbXb1hB78l1";
+        otherUid = "SQYPZpR4mFOhTe0qdeF2lCHXCk83";*/
     }
 
     @Override
