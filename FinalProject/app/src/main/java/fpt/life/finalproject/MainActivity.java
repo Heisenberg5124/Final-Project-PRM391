@@ -72,23 +72,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         matchedImageView.setOnClickListener(view -> {
-            sendDataToMatched();
-            onChangeService.updateMatchedUserIsKnown();
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.frame_layout_main_fragment, matchedFragment)
-                    .commit();
-            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
-            matchedImageView.setColorFilter(Color.rgb(253, 76, 103));
+            navigateMatched();
         });
 
         logoImageView.setOnClickListener(view -> {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.frame_layout_main_fragment, homepageFragment)
-                    .commit();
-            profileImageView.setColorFilter(Color.rgb(158, 158, 158));
-            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
+            navigateHomePage();
         });
     }
 
@@ -96,12 +84,34 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(false)
                 .replace(R.id.frame_layout_main_fragment, myProfileFragment)
+                .addToBackStack("a")
                 .commit();
         profileImageView.setColorFilter(Color.rgb(253, 76, 103));
         matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
         Log.d("CheckLocation1", "getLastKnownLocation3: ");
     }
 
+    public void navigateMatched() {
+        sendDataToMatched();
+        onChangeService.updateMatchedUserIsKnown();
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.frame_layout_main_fragment, matchedFragment)
+                .commit();
+        profileImageView.setColorFilter(Color.rgb(158, 158, 158));
+        matchedImageView.setColorFilter(Color.rgb(253, 76, 103));
+        Log.d("CheckLocation1", "getLastKnownLocation4: ");
+    }
+
+    public void navigateHomePage() {
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.frame_layout_main_fragment, homepageFragment)
+                .commit();
+        profileImageView.setColorFilter(Color.rgb(158, 158, 158));
+        matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
+        Log.d("CheckLocation1", "getLastKnownLocation5: ");
+    }
 
     private void findView() {
         profileImageView = findViewById(R.id.image_view_profile);

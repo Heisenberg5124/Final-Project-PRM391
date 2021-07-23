@@ -50,6 +50,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
     private View root;
+    private LocationService locationService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         currentUser = ((MainActivity)getActivity()).getCurrentUser();
         swipeService = new SwipeService(currentUser);
         onChangeService = new OnChangeService();
+        locationService = new LocationService((MainActivity)getActivity(), FirebaseAuth.getInstance().getUid(),this);
         cardStackView = root.findViewById(R.id.homepage_view_card_stack);
         cardManager = new CardStackLayoutManager(this.getContext(), new CardStackListener() {
             @Override
@@ -148,7 +150,6 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     }
 
     private void loadingProfile() {
-        LocationService locationService = new LocationService(getActivity(), FirebaseAuth.getInstance().getUid(),this);
         locationService.getLastKnownLocation();
 //        loadProgressDialog();
     }

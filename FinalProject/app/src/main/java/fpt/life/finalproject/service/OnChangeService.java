@@ -45,7 +45,7 @@ public class OnChangeService {
     private static final String CHECK_UPDATE_DATA_TASK = "CHECK_UPDATE_DATA_TASK";
     private static final String CHANNEL_ID = "Channel_1";
     private static final String DEFAULT_ID_LAST_MESSAGE = "0000";
-    private String currentUserUid = FirebaseAuth.getInstance().getUid();;
+    private String currentUserUid = FirebaseAuth.getInstance().getUid();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
     private Activity activity;

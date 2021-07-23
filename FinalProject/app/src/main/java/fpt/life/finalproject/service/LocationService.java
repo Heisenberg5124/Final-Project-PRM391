@@ -73,7 +73,7 @@ public class LocationService {
 
     private void requestLocationPermission() {
         Log.d("CheckLocation1", "requestLocationPermission1: ");
-        EasyPermissions.requestPermissions((Activity) context,
+        EasyPermissions.requestPermissions(context,
                 "This application cannot work without Location Permission",
                 PERMISSION_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION);
 
