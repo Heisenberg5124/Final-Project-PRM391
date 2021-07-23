@@ -45,7 +45,7 @@ public class OnChangeService {
     private static final String CHECK_UPDATE_DATA_TASK = "CHECK_UPDATE_DATA_TASK";
     private static final String CHANNEL_ID = "Channel_1";
     private static final String DEFAULT_ID_LAST_MESSAGE = "0000";
-    private static final String currentUserUid = FirebaseAuth.getInstance().getUid();
+    private String currentUserUid = FirebaseAuth.getInstance().getUid();;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
     private Activity activity;
@@ -59,6 +59,7 @@ public class OnChangeService {
 
     public void upDateStatus(boolean status) {
         documentReference = db.collection("users").document(currentUserUid);
+        Log.d("upDateStatus", "upDateStatus: " + currentUserUid);
         documentReference.update("onlineStatus", status);
         if (!status) {
             Timestamp timeStamp = Timestamp.now();
