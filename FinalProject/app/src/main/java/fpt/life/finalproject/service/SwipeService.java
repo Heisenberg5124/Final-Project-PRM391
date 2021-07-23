@@ -215,6 +215,7 @@ public class SwipeService {
     private void createMatchedUser(String otherLikedUserUid) {
         //create data
         Map<String, Object> matchedUserData = new HashMap<>();
+        Map<String, Object> lastMessage = new HashMap<>();
         ArrayList<String> userMatchedList = new ArrayList<>();
         Map<String, Boolean> isKnownMap = new HashMap<>();
         Map<String, Boolean> isNotifyMap = new HashMap<>();
@@ -224,8 +225,9 @@ public class SwipeService {
         isNotifyMap.put(otherLikedUserUid, false);
         userMatchedList.add(currentUser.getUid());
         userMatchedList.add(otherLikedUserUid);
+        lastMessage.put("id","0000");
         //put data to field
-        matchedUserData.put("lastMessage", "0000");
+        matchedUserData.put("lastMessage", lastMessage);
         matchedUserData.put("isKnown", isKnownMap);
         matchedUserData.put("isNotify", isNotifyMap);
         matchedUserData.put("sender", userMatchedList);
