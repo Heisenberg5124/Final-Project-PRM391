@@ -49,7 +49,7 @@ public class MatchedService {
                     String otherUid = sender.get(0).equals(currentUserID) ? sender.get(1) : sender.get(0);
                     Map<String, Object> lastMessageMap = (Map<String, Object>) document.getDocument().get("lastMessage");
                     if (!(lastMessageMap.get("id").toString().equals("0000"))) {
-                        String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Send a image to you";
+                        String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Sent an image";
                         Log.d("checkRemove", lastMessageMap.get("id").toString());
                         getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, lastMessage, lastMessageMap.get("id").toString(), (Timestamp) lastMessageMap.get("sendTime"), (Boolean) lastMessageMap.get("isSeen"), lastMessageMap.get("sender").toString());
                     } else {
