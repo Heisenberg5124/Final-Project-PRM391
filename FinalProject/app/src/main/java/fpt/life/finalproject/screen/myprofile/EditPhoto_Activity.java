@@ -78,8 +78,8 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
 
 
     private void initFireBase() {
-//        editPhotoService = new EditPhotoService(FirebaseAuth.getInstance().getUid());
-        editPhotoService = new EditPhotoService("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
+        editPhotoService = new EditPhotoService(FirebaseAuth.getInstance().getUid());
+//        editPhotoService = new EditPhotoService("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
     }
 
     private void onClickButtonDone() {  //TODO: list hiển thị khi drag drop khác với list thật trong db

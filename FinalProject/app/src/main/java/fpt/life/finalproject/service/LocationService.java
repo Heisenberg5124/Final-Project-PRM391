@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -55,7 +56,7 @@ public class LocationService {
         this.context = context;
         this.uid = uid;
         this.documentReference = FirebaseFirestore.getInstance().collection("users")
-                .document("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
+                .document(uid);
         this.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
