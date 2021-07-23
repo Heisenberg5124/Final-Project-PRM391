@@ -122,8 +122,6 @@ public class ChatService {
                     firebaseListener.onOtherUnmatched(chatRoom);
             }
         });
-
-        saveMessageToFireStore(fireStoreMessage);
     }
 
     private void saveMessageToFireStore(Map<String, Object> message) {
