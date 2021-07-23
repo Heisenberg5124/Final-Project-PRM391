@@ -33,9 +33,10 @@ import fpt.life.finalproject.model.User;
 import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
 import fpt.life.finalproject.service.LocationService;
 import fpt.life.finalproject.service.OnChangeService;
+import fpt.life.finalproject.service.OnUpdateLocationFirebaseListener;
 import fpt.life.finalproject.service.SwipeService;
 
-public class HomepageFragment extends Fragment implements InformationHomePageClickedListener {
+public class HomepageFragment extends Fragment implements InformationHomePageClickedListener, OnUpdateLocationFirebaseListener {
 
     private SwipeService swipeService;
     private OnChangeService onChangeService;
@@ -47,6 +48,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     private CircleButton likeButton, nopeButton, refreshButton;
     private CountDownTimer countDownTimer;
     private ProgressDialog progressDialog;
+    private View root;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_homepage, container, false);
+        root = inflater.inflate(R.layout.fragment_homepage, container, false);
         init(root);
         return root;
     }
@@ -77,11 +79,11 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
             public void onCardSwiped(Direction direction) {
                 if (direction == Direction.Right) {
                     swipeService.swipeRight();
-                    checkEmptyHomePageProfileList(root,swipeService.getHomePageProfileList());
+                    checkEmptyHomePageProfileList(swipeService.getHomePageProfileList());
                 }
                 if (direction == Direction.Left) {
                     swipeService.swipeLeft();
-                    checkEmptyHomePageProfileList(root,swipeService.getHomePageProfileList());
+                    checkEmptyHomePageProfileList(swipeService.getHomePageProfileList());
                 }
                 cardAdapter.notifyItemRemoved(0);
                 //TODO: Vi khong can turn back lai card nen se xoa luon moi lan swipe
@@ -128,14 +130,14 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         refreshButton.setOnClickListener(v -> {
             currentUser = ((MainActivity)getActivity()).getCurrentUser();
             swipeService.setCurrentUser(currentUser);
-            loadingProfile(root);
+            loadingProfile();
         });
 
-        loadingProfile(root);
+        loadingProfile();
 
     }
 
-    private void checkEmptyHomePageProfileList(View root, List<HomePageProfile> homePageProfileList) {
+    private void checkEmptyHomePageProfileList(List<HomePageProfile> homePageProfileList) {
         LinearLayout refreshLayout = root.findViewById(R.id.layout_refresh);
         if (homePageProfileList.isEmpty()) {
             refreshLayout.setVisibility(View.VISIBLE);
@@ -144,33 +146,10 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         }
     }
 
-    private void loadingProfile(View root) {
-        LocationService locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid());
+    private void loadingProfile() {
+        LocationService locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid(),this);
         locationService.getLastKnownLocation();
-
         loadProgressDialog();
-        swipeService.setUserList(null);
-        //khoi tao countdown
-        countDownTimer = new CountDownTimer(10000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                if (swipeService.getUserList() == null) {
-                    countDownTimer.start();
-                } else {
-                    swipeService.loadProfiles();
-                    onChangeService.listenDataUsersOnChange(swipeService,cardAdapter);
-                    checkEmptyHomePageProfileList(root, swipeService.getHomePageProfileList());
-                    cardAdapter.notifyDataSetChanged();
-                    progressDialog.dismiss();
-                }
-            }
-        };
-        swipeService.getAllDocument(countDownTimer);
     }
 
     private void loadProgressDialog() {
@@ -206,5 +185,31 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
         Intent i = new Intent(getContext(), ViewOtherProfile_Activity.class);
         i.putExtra("otherUid",otherUid);
         startActivity(i);
+    }
+
+    @Override
+    public void onCompleteUpdateLocation() {
+        swipeService.setUserList(null);
+        //khoi tao countdown
+        countDownTimer = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (swipeService.getUserList() == null) {
+                    countDownTimer.start();
+                } else {
+                    swipeService.loadProfiles();
+                    onChangeService.listenDataUsersOnChange(swipeService,cardAdapter);
+                    checkEmptyHomePageProfileList(swipeService.getHomePageProfileList());
+                    cardAdapter.notifyDataSetChanged();
+                    progressDialog.dismiss();
+                }
+            }
+        };
+        swipeService.getAllDocument(countDownTimer);
     }
 }

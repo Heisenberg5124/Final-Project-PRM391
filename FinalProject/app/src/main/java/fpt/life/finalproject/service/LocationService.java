@@ -49,16 +49,18 @@ public class LocationService {
     private String uid;
     private LocationManager locationManager;
     private boolean isLocationGranted;
+    private OnUpdateLocationFirebaseListener onUpdateLocationFirebaseListener;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    public LocationService(Context context, String uid) {
+    public LocationService(Context context, String uid, OnUpdateLocationFirebaseListener onUpdateLocationFirebaseListener) {
         this.context = context;
         this.uid = uid;
         this.documentReference = FirebaseFirestore.getInstance().collection("users")
                 .document(uid);
         this.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        this.onUpdateLocationFirebaseListener = onUpdateLocationFirebaseListener;
     }
 
     private boolean hasLocationPermission() {
@@ -126,7 +128,15 @@ public class LocationService {
 
     private void updateLocation(Location location) {
         if (location != null) {
-            documentReference.update("location", new GeoPoint(location.getLatitude(), location.getLongitude()));
+            documentReference.update("location", new GeoPoint(location.getLatitude(), location.getLongitude()))
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        onUpdateLocationFirebaseListener.onCompleteUpdateLocation();
+                    }
+                }
+            });
             documentReference.update("city", getCityFromLocation(location));
         }
     }

@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:background="#FFFFFF"
-                android:text="BOTH"
+                android:text="EVERYONE"
                 android:textAlignment="center"
                 app:checkedIcon="@null"
                 app:chipStrokeWidth="1.5dp" />
