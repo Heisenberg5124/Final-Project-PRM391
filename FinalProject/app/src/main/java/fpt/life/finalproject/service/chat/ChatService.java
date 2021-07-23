@@ -112,13 +112,29 @@ public class ChatService {
         fireStoreMessage.put("sendTime", Timestamp.now());
 
         firebaseFirestore.collection("matched_users").document(generateMatchedUid())
-                .collection("messages").add(fireStoreMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists())
+                    saveMessageToFireStore(fireStoreMessage);
+                else
+                    firebaseListener.onOtherUnmatched(chatRoom);
+            }
+        });
+
+        saveMessageToFireStore(fireStoreMessage);
+    }
+
+    private void saveMessageToFireStore(Map<String, Object> message) {
+        firebaseFirestore.collection("matched_users").document(generateMatchedUid())
+                .collection("messages").add(message).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
             public void onComplete(@NonNull Task<DocumentReference> task) {
                 if (task.isSuccessful()) {
                     Log.d("SendMessage", "sendMessage: " + task.getResult().getId());
-                    fireStoreMessage.put("id", task.getResult().getId());
-                    saveLastMessage(fireStoreMessage);
+                    message.put("id", task.getResult().getId());
+                    saveLastMessage(message);
                 }
             }
         });
