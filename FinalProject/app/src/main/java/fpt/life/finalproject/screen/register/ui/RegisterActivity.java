@@ -1,5 +1,6 @@
 package fpt.life.finalproject.screen.register.ui;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -12,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fpt.life.finalproject.R;
+import fpt.life.finalproject.screen.Login.Login_Activity;
 import fpt.life.finalproject.service.LocationService;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -38,6 +40,12 @@ public class RegisterActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(v -> {
             NavController navController = navHostFragment.getNavController();
             navController.popBackStack();
+        });
+
+        buttonClose.setOnClickListener(view -> {
+            Intent intent = new Intent(this, Login_Activity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
