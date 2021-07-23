@@ -127,6 +127,8 @@ public class ChatService {
     private void saveLastMessage(Map<String, Object> lastMessage) {
         firebaseFirestore.collection("matched_users").document(generateMatchedUid())
                 .update("lastMessage", lastMessage);
+        firebaseFirestore.collection("matched_users").document(generateMatchedUid())
+                .update("sendTime", lastMessage.get("sendTime"));
     }
 
     public void getAllMessages() {
