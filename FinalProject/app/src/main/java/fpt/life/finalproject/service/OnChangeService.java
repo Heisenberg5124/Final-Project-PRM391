@@ -120,6 +120,7 @@ public class OnChangeService {
         db.collection("matched_users")
                 .whereEqualTo("isKnown."+currentUserUid,true)
                 .whereEqualTo("lastMessage.isSeen",false)
+                .whereNotEqualTo("lastMessage.sender",currentUserUid)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
