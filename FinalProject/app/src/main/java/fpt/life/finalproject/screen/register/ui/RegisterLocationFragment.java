@@ -60,7 +60,7 @@ public class RegisterLocationFragment extends Fragment {
 
     private void initComponents() {
         buttonLocation = view.findViewById(R.id.button_register_allow_location);
-        locationService = new LocationService(getContext(), uid);
+        locationService = new LocationService(getContext(), uid,null);
 
         buttonLocation.setOnClickListener(view -> {
             locationService.getLastKnownLocation();

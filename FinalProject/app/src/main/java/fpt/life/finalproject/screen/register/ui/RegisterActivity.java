@@ -35,7 +35,6 @@ public class RegisterActivity extends AppCompatActivity {
         buttonBack = findViewById(R.id.image_view_register_back);
         buttonClose = findViewById(R.id.image_view_register_close);
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container_register);
-        locationService = new LocationService(getApplicationContext(), FirebaseAuth.getInstance().getUid());
         buttonBack.setOnClickListener(v -> {
             NavController navController = navHostFragment.getNavController();
             navController.popBackStack();

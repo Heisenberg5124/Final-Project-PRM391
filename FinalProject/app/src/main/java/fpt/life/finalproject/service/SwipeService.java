@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -227,6 +228,7 @@ public class SwipeService {
         matchedUserData.put("isKnown", isKnownMap);
         matchedUserData.put("isNotify", isNotifyMap);
         matchedUserData.put("sender", userMatchedList);
+        matchedUserData.put("sendTime", Timestamp.now());
         //format matchedUid
         String matchedUid = currentUser.getUid().compareTo(otherLikedUserUid) <= 0
                 ? currentUser.getUid() + "_" + otherLikedUserUid

@@ -50,7 +50,7 @@ public class RegisterService {
         this.storageReference = FirebaseStorage.getInstance().getReference("profile_photos");
         this.collectionReference = FirebaseFirestore.getInstance()
                 .collection("users");
-        this.locationService = new LocationService(context, registrationProfile.getUid());
+        this.locationService = new LocationService(context, registrationProfile.getUid(),null);
     }
 
     @SneakyThrows
