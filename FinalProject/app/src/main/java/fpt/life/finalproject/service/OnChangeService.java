@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -68,7 +69,7 @@ public class OnChangeService {
     }
 
     public void listenMatchedUsersNotify() {
-        db.collection("matched_users").whereEqualTo("isNotify",false)
+        db.collection("matched_users").whereEqualTo("isNotify."+currentUserUid,false)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
@@ -78,7 +79,6 @@ public class OnChangeService {
                     return;
                 }
                 for (DocumentChange dc : value.getDocumentChanges()) {
-                    Log.d("checkSnapshot", dc.getType().toString());
                     switch (dc.getType()) {
                         case ADDED:
                             if (dc.getDocument().getId().contains(currentUserUid)) {
@@ -100,20 +100,21 @@ public class OnChangeService {
     }
 
     public void listenMatchedUsersIsKnown() {
+        Log.d("checkListen", "ok");
+        ((MainActivity)activity).setNotifyCircleVisibility(false);
         db.collection("matched_users").whereEqualTo("isKnown."+currentUserUid,false)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
-                    if (task.getResult().size()>0){
-                        ((MainActivity)activity).setNotifyCircleVisibility(true);
-                        Log.d("checkMatch0", "ok");
-                    }else {
-                        listenChatIsSeen();
+                    if (task.getResult().size()>0) {
+                        ((MainActivity) activity).setNotifyCircleVisibility(true);
+                        Log.d("checkMatch0", task.getResult().getDocuments().get(0).get("isKnown").toString());
                     }
                 }
             }
         });
+        listenChatIsSeen();
     }
 
     private void listenChatIsSeen() {
@@ -145,9 +146,14 @@ public class OnChangeService {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot dc : task.getResult()){
                         db.collection("matched_users").document(dc.getId())
-                                .update("isKnown."+currentUserUid, true);
+                                .update("isKnown."+currentUserUid, true)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                listenMatchedUsersIsKnown();
+                            }
+                        });
                     }
-                    listenMatchedUsersIsKnown();
                 }
             }
         });
@@ -193,14 +199,12 @@ public class OnChangeService {
                     return;
                 }
                 for (DocumentChange dc : value.getDocumentChanges()) {
-                    Log.d("checkSnapshot", dc.getType().toString());
                     User user = dc.getDocument().toObject(User.class);
                     switch (dc.getType()) {
                         case MODIFIED:
                             swipeService.updateUserlist(user.getUid(),user);
                             swipeService.filterProfiles();
                             cardAdapter.notifyDataSetChanged();
-                            Log.d("checkDataChange:", "true");
                             break;
                         case ADDED:
                             swipeService.addItemUserlist(user.getUid(),user);

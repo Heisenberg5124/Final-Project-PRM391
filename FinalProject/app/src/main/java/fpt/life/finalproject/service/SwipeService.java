@@ -93,7 +93,6 @@ public class SwipeService {
     public void filterProfiles() {
         homePageProfileList.clear();
         List<HomePageProfile> homePageProfileList = new ArrayList<>();
-        Log.d("size", userList.size() + "");
         for (Map.Entry<String, User> entry : userList.entrySet()) {
             if (checkValidUser(entry.getValue())) {
                 String uid = entry.getValue().getUid();
