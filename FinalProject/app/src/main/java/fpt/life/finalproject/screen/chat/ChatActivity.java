@@ -85,6 +85,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
 //        chatService.getChatRoomInfo();
         chatService.onChangeChatRoomInfo();
         chatService.getAllMessages();
+        chatService.seenAllMessages();
     }
 
     private void initComponents() {
@@ -194,7 +195,6 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         Log.d("Message", "seenAllMessagesUI: ");
         messageAdapter.notifyDataSetChanged();
         recyclerViewChatMessages.scrollToPosition(chatService.getMessages().size() - 1);
-        chatService.seenAllMessages();
     }
 
     @Override
