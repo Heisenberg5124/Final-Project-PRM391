@@ -42,11 +42,11 @@ public class ProfileMatchAdapter extends RecyclerView.Adapter<ProfileMatchAdapte
     public void onBindViewHolder(@NonNull ProfileMatchAdapter.ViewHolder holder, int position) {
         MatchedProfile matchedProfile = listMatchedProfile.get(position);
         ImageView avt_matched_view = holder.avt_matched;
-        Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
+        Picasso.get().load(matchedProfile.getPhotoImageUrl()).fit().into(avt_matched_view);
         TextView text_view_name_matched_view = holder.text_view_name_matched;
         text_view_name_matched_view.setText(matchedProfile.getOtherUserName());
         ImageView isOnline = holder.imageViewIsOnline;
-        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#00FF66" : "#888888";
         isOnline.setColorFilter(Color.parseColor(colorStatus));
     }
     public void filterProfileList(ArrayList<MatchedProfile> filteredList) {

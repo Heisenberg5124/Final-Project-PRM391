@@ -2,9 +2,11 @@ package fpt.life.finalproject.screen.matched;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -44,6 +46,10 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
     private String name;
     private View rootView;
     private SearchView searchProfile;
+
+    private TextView txtTitleChat;
+    private TextView txtTitleMatch;
+    private TextView txtNoProfile;
 
     public MatchedFragment() {
         // Required empty public constructor
@@ -87,6 +93,11 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         rvChatted.setAdapter(chatAdapter);
         //Profile Adapter
         profileMatchAdapter = new ProfileMatchAdapter(profileList,this);
+        //Title
+        txtTitleChat = rootView.findViewById(R.id.txt_title_chat);
+        txtTitleMatch = rootView.findViewById(R.id.txt_title_match);
+        txtNoProfile = rootView.findViewById(R.id.txt_no_profile);
+
     }
 
     private void searchProfileOnclick(){
@@ -128,7 +139,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
     }
     @Override
     public void onItemClick(String otherUid) {
-//        Todo: intent to another screen
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("currentUid", uid);
         intent.putExtra("otherUid", otherUid);
@@ -140,6 +150,8 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             @Override
             public void onNewMatchedProfile(MatchedProfile matchedProfile) {
                 profileMatchedList.add(matchedProfile);
+                txtTitleMatch.setVisibility(TextView.VISIBLE);
+                txtNoProfile.setVisibility(View.INVISIBLE);
                 matchedAdapter.notifyDataSetChanged();
             }
 
@@ -174,29 +186,36 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
 
             @Override
             public void onNewChattedProfile(int posInMatched, MatchedProfile matchedProfile) {
+                Log.d("CheckSize",profileMatchedList.size()+ " ");
                 if (posInMatched != -1) {
                     profileMatchedList.remove(posInMatched);
                     matchedAdapter.notifyDataSetChanged();
+                    if (profileMatchedList.size() == 0){
+                        txtTitleMatch.setVisibility(TextView.INVISIBLE);
+                    }
                 }
                 profileChattedList.add(0, matchedProfile);
+                txtTitleChat.setVisibility(TextView.VISIBLE);
+                txtNoProfile.setVisibility(View.INVISIBLE);
                 chatAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void unMatched(String uid, String type, MatchedProfile Profile) {
-                if (type.equals("Chatted")){
-                    profileChattedList.remove(Profile);
-                    chatAdapter.notifyDataSetChanged();
-                }else {
-                    profileMatchedList.remove(Profile);
-                    matchedAdapter.notifyDataSetChanged();
+            public void finishLoad() {
+                Log.d("CheckSize","Loaded");
+                if (profileMatchedList.size() == 0 && profileChattedList.size() == 0){
+                    txtNoProfile.setVisibility(View.VISIBLE);
                 }
-                profileList.remove(Profile);
+                if (profileMatchedList.size() == 0){
+                    txtTitleMatch.setVisibility(TextView.INVISIBLE);
+                }
+                if (profileChattedList.size() == 0){
+                    txtTitleChat.setVisibility(TextView.INVISIBLE);
+                }
             }
         };
         matchedService.snapshotMatchUser(onInforAnotherUserChange);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -204,6 +223,18 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
                 Log.d("Intent", "onActivityResult: " + data.getSerializableExtra("unmatchedUid"));
+                String unmatchedUid = (String) data.getSerializableExtra("unmatchedUid");
+                int posChat = matchedService.checkExistProfile(unmatchedUid,profileChattedList);
+                int posMatch = matchedService.checkExistProfile(unmatchedUid,profileMatchedList);
+                if (posChat != -1){
+                    profileChattedList.remove(posChat);
+                    matchedService.unmatch("Chat",posChat);
+                    chatAdapter.notifyDataSetChanged();
+                }else {
+                    profileMatchedList.remove(posMatch);
+                    matchedService.unmatch("Match",posMatch);
+                    matchedAdapter.notifyDataSetChanged();
+                }
             }
         }
     }

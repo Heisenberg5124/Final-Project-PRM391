@@ -7,6 +7,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,34 +42,26 @@ public class MatchedService {
     }
 
     public void snapshotMatchUser(OnInforAnotherUserChange onInforAnotherUserChange) {
-        colRef.whereArrayContains("sender", currentUserID).addSnapshotListener((value, error) -> {
+        colRef.orderBy("sendTime", Query.Direction.ASCENDING).addSnapshotListener((value, error) -> {
             for (DocumentChange document : value.getDocumentChanges()) {
                 ArrayList<String> sender = (ArrayList<String>) document.getDocument().get("sender");
-                String otherUid = sender.get(0).equals(currentUserID) ? sender.get(1) : sender.get(0);
-                Map<String, Object> lastMessageMap = (Map<String, Object>) document.getDocument().get("lastMessage");
-                if (!(lastMessageMap.get("id").toString().equals("0000"))) {
-                    String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Send a image to you";
-                    Log.d("checkRemove", lastMessageMap.get("id").toString());
-                    getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, lastMessage, lastMessageMap.get("id").toString(), timestampToString((Timestamp) lastMessageMap.get("sendTime")), (Boolean) lastMessageMap.get("isSeen"), lastMessageMap.get("sender").toString());
-                } else {
-                    getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, null, null, null, null, null);
+                if (sender.get(0).equals(currentUserID) || sender.get(1).equals(currentUserID)) {
+                    String otherUid = sender.get(0).equals(currentUserID) ? sender.get(1) : sender.get(0);
+                    Map<String, Object> lastMessageMap = (Map<String, Object>) document.getDocument().get("lastMessage");
+                    if (!(lastMessageMap.get("id").toString().equals("0000"))) {
+                        String lastMessage = (lastMessageMap.get("image").equals("")) ? lastMessageMap.get("content").toString() : "Send a image to you";
+                        Log.d("checkRemove", lastMessageMap.get("id").toString());
+                        getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, lastMessage, lastMessageMap.get("id").toString(), (Timestamp) lastMessageMap.get("sendTime"), (Boolean) lastMessageMap.get("isSeen"), lastMessageMap.get("sender").toString());
+                    } else {
+                        getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, null, null, null, null, null);
+                    }
                 }
             }
+            onInforAnotherUserChange.finishLoad();
         });
     }
 
-    public String timestampToString(Timestamp timestamp) {
-        Long distanceTime = System.currentTimeMillis() / 1000 - timestamp.getSeconds();
-        SimpleDateFormat formatter;
-        if (distanceTime < 86400) {
-            formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-        } else {
-            formatter = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
-        }
-        return formatter.format(timestamp.toDate());
-    }
-
-    private void getAnotherMatchedInfo(OnInforAnotherUserChange onInforAnotherUserChange, String uid, String lastMessage, String lastMessageID, String timeLastMessage, Boolean isSeen, String sender) {
+    private void getAnotherMatchedInfo(OnInforAnotherUserChange onInforAnotherUserChange, String uid, String lastMessage, String lastMessageID, Timestamp timeLastMessage, Boolean isSeen, String sender) {
         DocumentReference docRefGetChatInfo = db.collection("users").document(uid);
         docRefGetChatInfo.addSnapshotListener((valueGetChatInfo, error1) -> {
 
@@ -119,7 +112,14 @@ public class MatchedService {
         });
     }
 
-    private int checkExistProfile(String uid, ArrayList<MatchedProfile> ProfileList) {
+    public void unmatch(String typeUser, int pos){
+        if (typeUser.equals("Chat")){
+            chatProfileList.remove(pos);
+        }else {
+            matchedProfileList.remove(pos);
+        }
+    }
+    public int checkExistProfile(String uid, ArrayList<MatchedProfile> ProfileList) {
         for (int i = 0; i < ProfileList.size(); i++) {
             if (ProfileList.get(i).getOtherUid().equals(uid)) return i;
         }

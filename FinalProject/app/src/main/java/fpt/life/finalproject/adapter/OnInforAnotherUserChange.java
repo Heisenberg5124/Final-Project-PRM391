@@ -8,5 +8,5 @@ public interface OnInforAnotherUserChange {
         void onIsOnlineChange(int pos, Boolean isOnline, String typeUser);
         void onMessageChange(int pos, MatchedProfile matchedProfile);
         void onNewChattedProfile(int posInMatched, MatchedProfile matchedProfile);
-        void unMatched(String uid, String type, MatchedProfile Profile);
+        void finishLoad();
 }

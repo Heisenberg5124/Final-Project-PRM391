@@ -13,25 +13,23 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RecyclerView_Matched_Matched"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_view_my_profile" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_title_match" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RecyclerView_Matched_Chat"
             android:layout_width="match_parent"
             android:layout_height="500dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/RecyclerView_Matched_Matched" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_title_chat" />
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view_my_profile"
@@ -49,6 +47,43 @@
             app:queryBackground="@null"
             app:queryHint="Search Name"
             app:submitBackground="@null" />
+
+        <TextView
+            android:id="@+id/txt_title_match"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Matched"
+            android:textColor="#8E8D8D"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_view_my_profile" />
+
+        <TextView
+            android:id="@+id/txt_title_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="Chat"
+            android:textColor="#8E8D8D"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RecyclerView_Matched_Matched" />
+
+        <TextView
+            android:id="@+id/txt_no_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Profile Matched"
+            android:textColor="#8E8D8D"
+            android:textSize="24sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -40,9 +40,9 @@ public class MatchedAdapter extends RecyclerView.Adapter<MatchedAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MatchedProfile matchedProfile = listMatched.get(position);
         ImageView avt_matched_view = holder.avt_matched;
-        Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avt_matched_view);
+        Picasso.get().load(matchedProfile.getPhotoImageUrl()).fit().into(avt_matched_view);
         ImageView isOnline = holder.imageViewIsOnline;
-        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#00FF66" : "#888888";
         isOnline.setColorFilter(Color.parseColor(colorStatus));
         TextView text_view_name_matched_view = holder.text_view_name_matched;
         text_view_name_matched_view.setText(matchedProfile.getOtherUserName());

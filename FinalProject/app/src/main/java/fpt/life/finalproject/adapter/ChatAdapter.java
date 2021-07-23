@@ -12,9 +12,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.dto.MatchedProfile;
@@ -46,15 +49,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MatchedProfile matchedProfile = listChatted.get(position);
         ImageView avtChatted = holder.avtChatted;
-        Picasso.get().load(matchedProfile.getPhotoImageUrl()).into(avtChatted);
+        Picasso.get().load(matchedProfile.getPhotoImageUrl()).fit().into(avtChatted);
         name = holder.textViewNameChatted;
         name.setText(matchedProfile.getOtherUserName());
         lastMessage = holder.textViewLastMessage;
         lastMessage.setText(String.format("%s: %s • %s", setSenderName(matchedProfile.getSender(),matchedProfile),
                 checkLengthMessage(setSenderName(matchedProfile.getSender(), matchedProfile),
-                        matchedProfile.getLastMessage()), matchedProfile.getTimeLastMessage()));
+                        matchedProfile.getLastMessage()), timestampToString(matchedProfile.getTimeLastMessage())));
         ImageView isOnline = holder.imageViewIsOnline;
-        String colorStatus = matchedProfile.getOnlineStatus() ? "#99ffbb" : "#cccccc";
+        String colorStatus = matchedProfile.getOnlineStatus() ? "#00FF66" : "#888888";
         isOnline.setColorFilter(Color.parseColor(colorStatus));
         setColorTextView(matchedProfile);
     }
@@ -112,6 +115,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             return currentUserName;
         }
         return matchedProfile.getOtherUserName();
+    }
+
+    public String timestampToString(Timestamp timestamp) {
+        Long distanceTime = System.currentTimeMillis() / 1000 - timestamp.getSeconds();
+        SimpleDateFormat formatter;
+        if (distanceTime < 86400) {
+            formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+        } else {
+            formatter = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
+        }
+        return formatter.format(timestamp.toDate());
     }
 
 }
