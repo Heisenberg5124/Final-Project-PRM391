@@ -151,7 +151,7 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             public void onNewMatchedProfile(MatchedProfile matchedProfile) {
                 profileMatchedList.add(matchedProfile);
                 txtTitleMatch.setVisibility(TextView.VISIBLE);
-                txtNoProfile.setVisibility(View.INVISIBLE);
+                txtNoProfile.setVisibility(View.GONE);
                 matchedAdapter.notifyDataSetChanged();
             }
 
@@ -191,12 +191,12 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
                     profileMatchedList.remove(posInMatched);
                     matchedAdapter.notifyDataSetChanged();
                     if (profileMatchedList.size() == 0){
-                        txtTitleMatch.setVisibility(TextView.INVISIBLE);
+                        txtTitleMatch.setVisibility(TextView.GONE);
                     }
                 }
                 profileChattedList.add(0, matchedProfile);
                 txtTitleChat.setVisibility(TextView.VISIBLE);
-                txtNoProfile.setVisibility(View.INVISIBLE);
+                txtNoProfile.setVisibility(View.GONE);
                 chatAdapter.notifyDataSetChanged();
             }
 
@@ -207,10 +207,10 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
                     txtNoProfile.setVisibility(View.VISIBLE);
                 }
                 if (profileMatchedList.size() == 0){
-                    txtTitleMatch.setVisibility(TextView.INVISIBLE);
+                    txtTitleMatch.setVisibility(TextView.GONE);
                 }
                 if (profileChattedList.size() == 0){
-                    txtTitleChat.setVisibility(TextView.INVISIBLE);
+                    txtTitleChat.setVisibility(TextView.GONE);
                 }
             }
         };
