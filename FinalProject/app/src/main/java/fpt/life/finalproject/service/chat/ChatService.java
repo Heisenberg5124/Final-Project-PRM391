@@ -180,37 +180,37 @@ public class ChatService {
                             }
                         }
                         firebaseListener.onCompleteLoadMessages(chatRoom);
-                        firebaseFirestore.collection("matched_users").document(generateMatchedUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (!((Map<String, Object>) task.getResult().get("lastMessage")).get("id").equals("0000"))
-                                    seenAllMessages();
-                            }
-                        });
                     }
                 });
     }
 
-    private void seenAllMessages() {
-        Log.d("Message", "seenAllMessagesBefore: ");
-        firebaseFirestore.collection("matched_users").document(generateMatchedUid())
-                .collection("messages").whereEqualTo("sender", otherUid)
-                .whereEqualTo("isSeen",false)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void seenAllMessages() {
+        firebaseFirestore.collection("matched_users").document(generateMatchedUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (!((Map<String, Object>) task.getResult().get("lastMessage")).get("id").equals("0000")) {
+                    Log.d("Message", "seenAllMessagesBefore: ");
                     firebaseFirestore.collection("matched_users").document(generateMatchedUid())
-                            .collection("messages").document(documentSnapshot.getId())
-                            .update("isSeen", true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            .collection("messages").whereEqualTo("sender", otherUid)
+                            .whereEqualTo("isSeen",false)
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                firebaseFirestore.collection("matched_users").document(generateMatchedUid())
+                                        .collection("messages").document(documentSnapshot.getId())
+                                        .update("isSeen", true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
 
+                                    }
+                                });
+                                Log.d("Message", "seenAllMessagesAfter: ");
+                            }
+                            setLastMessageSeen();
                         }
                     });
-                    Log.d("Message", "seenAllMessagesAfter: ");
                 }
-                setLastMessageSeen();
             }
         });
     }
