@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class LocationService {
 
     private DocumentReference documentReference;
 
+    private ProgressDialog progressDialog;
     private Activity context;
     private String uid;
     private LocationManager locationManager;
@@ -84,10 +86,19 @@ public class LocationService {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
+    private void loadProgressDialog() {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
     @SuppressLint("MissingPermission")
     public void getLastKnownLocation() {
         if (hasLocationPermission()) {
             if (isProviderEnabled()) {
+                loadProgressDialog();
                 fusedLocationProviderClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
                     @Override
                     public boolean isCancellationRequested() {
@@ -146,6 +157,7 @@ public class LocationService {
                 @Override
                 public void onComplete(@NonNull @NotNull Task<Void> task) {
                     if (task.isSuccessful()){
+                        progressDialog.dismiss();
                         onUpdateLocationFirebaseListener.onCompleteUpdateLocation();
                     }
                 }

@@ -143,6 +143,7 @@ public class ChatService {
                 .update("lastMessage", lastMessage);
         firebaseFirestore.collection("matched_users").document(generateMatchedUid())
                 .update("sendTime", lastMessage.get("sendTime"));
+        seenAllMessages();
     }
 
     public void getAllMessages() {

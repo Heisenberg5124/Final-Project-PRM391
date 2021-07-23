@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         onChangeService.listenOnlineUsersOnChange();
         onChangeService.listenMatchedUsersNotify();
         onChangeService.listenMatchedUsersIsKnown();
+        onChangeService.listenNewChat();
         onChangeService.upDateStatus(true);
 //        loadProgressDialog();
         getCurrentUserFromDatabase(FirebaseAuth.getInstance().getUid());

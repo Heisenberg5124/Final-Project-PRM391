@@ -118,6 +118,7 @@ public class OnChangeService {
     }
 
     private void listenChatIsSeen() {
+        Log.d("checkChat0", "111");
         db.collection("matched_users")
                 .whereEqualTo("isKnown."+currentUserUid,true)
                 .whereEqualTo("lastMessage.isSeen",false)
@@ -135,6 +136,33 @@ public class OnChangeService {
                 }
             }
         });
+    }
+
+    public void listenNewChat() {
+        db.collection("matched_users").whereEqualTo("isKnown."+currentUserUid,true)
+                .whereEqualTo("lastMessage.isSeen",false)
+                .whereNotEqualTo("lastMessage.sender",currentUserUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.d("checkOnline", error + "");
+                            return;
+                        }
+                        for (DocumentChange dc : value.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case MODIFIED:
+                                    Log.d("checknewchat", "ok");
+                                    if (dc.getDocument().getId().contains(currentUserUid)) {
+                                        Log.d("checknewchat", "ok2");
+                                        listenMatchedUsersIsKnown();
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                });
     }
 
     public void updateMatchedUserIsKnown(){
