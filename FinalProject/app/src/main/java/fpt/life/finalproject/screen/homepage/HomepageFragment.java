@@ -11,6 +11,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -147,9 +148,9 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
     }
 
     private void loadingProfile() {
-        LocationService locationService = new LocationService(getContext(), FirebaseAuth.getInstance().getUid(),this);
+        LocationService locationService = new LocationService(getActivity(), FirebaseAuth.getInstance().getUid(),this);
         locationService.getLastKnownLocation();
-        loadProgressDialog();
+//        loadProgressDialog();
     }
 
     private void loadProgressDialog() {
@@ -189,6 +190,7 @@ public class HomepageFragment extends Fragment implements InformationHomePageCli
 
     @Override
     public void onCompleteUpdateLocation() {
+        loadProgressDialog();
         swipeService.setUserList(null);
         //khoi tao countdown
         countDownTimer = new CountDownTimer(10000, 1000) {

@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -34,8 +35,11 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.List;
 
+import fpt.life.finalproject.MainActivity;
+import fpt.life.finalproject.R;
 import lombok.Data;
 import lombok.SneakyThrows;
+import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 @Data
@@ -45,7 +49,7 @@ public class LocationService {
 
     private DocumentReference documentReference;
 
-    private Context context;
+    private Activity context;
     private String uid;
     private LocationManager locationManager;
     private boolean isLocationGranted;
@@ -53,7 +57,7 @@ public class LocationService {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    public LocationService(Context context, String uid, OnUpdateLocationFirebaseListener onUpdateLocationFirebaseListener) {
+    public LocationService(Activity context, String uid, OnUpdateLocationFirebaseListener onUpdateLocationFirebaseListener) {
         this.context = context;
         this.uid = uid;
         this.documentReference = FirebaseFirestore.getInstance().collection("users")
@@ -68,9 +72,12 @@ public class LocationService {
     }
 
     private void requestLocationPermission() {
+        Log.d("CheckLocation1", "requestLocationPermission1: ");
         EasyPermissions.requestPermissions((Activity) context,
                 "This application cannot work without Location Permission",
                 PERMISSION_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        Log.d("CheckLocation1", "requestLocationPermission2: ");
     }
 
     public boolean isProviderEnabled() {
@@ -103,6 +110,12 @@ public class LocationService {
             }
         } else {
             requestLocationPermission();
+            Log.d("CheckLocation1", "getLastKnownLocation1: ");
+
+            if (context instanceof MainActivity) {
+                Log.d("CheckLocation1", "getLastKnownLocation2: ");
+                ((MainActivity) context).navigateMyProfile();
+            }
         }
     }
 

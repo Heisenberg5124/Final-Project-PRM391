@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,7 +51,7 @@ public class RegisterService {
         this.storageReference = FirebaseStorage.getInstance().getReference("profile_photos");
         this.collectionReference = FirebaseFirestore.getInstance()
                 .collection("users");
-        this.locationService = new LocationService(context, registrationProfile.getUid(),null);
+        this.locationService = new LocationService((Activity) context, registrationProfile.getUid(),null);
     }
 
     @SneakyThrows

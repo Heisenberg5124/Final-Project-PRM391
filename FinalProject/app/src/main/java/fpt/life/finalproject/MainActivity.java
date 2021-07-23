@@ -68,12 +68,7 @@ public class MainActivity extends AppCompatActivity {
 //        getCurrentUserFromDatabase("1YyOVbEZ9nbclrT9iX5GIRTCboA3");
 
         profileImageView.setOnClickListener(view -> {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.frame_layout_main_fragment, myProfileFragment)
-                    .commit();
-            profileImageView.setColorFilter(Color.rgb(253, 76, 103));
-            matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
+            navigateMyProfile();
         });
 
         matchedImageView.setOnClickListener(view -> {
@@ -97,6 +92,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void navigateMyProfile() {
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(false)
+                .replace(R.id.frame_layout_main_fragment, myProfileFragment)
+                .commit();
+        profileImageView.setColorFilter(Color.rgb(253, 76, 103));
+        matchedImageView.setColorFilter(Color.rgb(158, 158, 158));
+        Log.d("CheckLocation1", "getLastKnownLocation3: ");
+    }
 
 
     private void findView() {

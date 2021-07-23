@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.service.LocationService;
+import fpt.life.finalproject.service.OnUpdateLocationFirebaseListener;
 import fpt.life.finalproject.service.RegisterService;
 
 public class RegisterLocationFragment extends Fragment {
@@ -60,7 +62,12 @@ public class RegisterLocationFragment extends Fragment {
 
     private void initComponents() {
         buttonLocation = view.findViewById(R.id.button_register_allow_location);
-        locationService = new LocationService(getContext(), uid,null);
+        locationService = new LocationService(getActivity(), uid, new OnUpdateLocationFirebaseListener() {
+            @Override
+            public void onCompleteUpdateLocation() {
+
+            }
+        });
 
         buttonLocation.setOnClickListener(view -> {
             locationService.getLastKnownLocation();

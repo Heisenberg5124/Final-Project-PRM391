@@ -208,7 +208,7 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void setOnGenderSelect() {
-        if (myProfile.getGender().equals("Male"))
+        if (myProfile.getGender().equalsIgnoreCase("Male"))
             spinnerGender.setSelection(0);
         else spinnerGender.setSelection(1);
         spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
