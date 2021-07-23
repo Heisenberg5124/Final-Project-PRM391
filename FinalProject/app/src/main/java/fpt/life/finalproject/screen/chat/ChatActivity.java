@@ -205,6 +205,21 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
     }
 
     @Override
+    public void onOtherUnmatched(ChatRoom chatRoom) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Unmatched")
+                .setMessage(chatRoom.getOtherName() + " was unmatched you.\n" +
+                        "Do you want to come to other matched?")
+                .setNegativeButton(getString(R.string.decline), (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setPositiveButton(getString(R.string.accept), ((dialog, which) -> {
+                    finish();
+                }))
+                .show();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         choosePhotoHelper.onActivityResult(requestCode, resultCode, data);

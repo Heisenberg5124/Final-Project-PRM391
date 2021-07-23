@@ -7,4 +7,5 @@ public interface OnFirebaseListener {
     void onChangeChatRoomInfo(ChatRoom chatRoom);
     void onCompleteLoadMessages(ChatRoom chatRoom);
     void onCompleteUnmatched(ChatRoom chatRoom);
+    void onOtherUnmatched(ChatRoom chatRoom);
 }
