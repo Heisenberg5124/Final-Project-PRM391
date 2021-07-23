@@ -138,8 +138,8 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         textViewChatName.setText(chatRoomInfo.getOtherName());
         textViewChatStatus.setText(chatRoomInfo.getLastTimeOnline());
         imageViewChatRoomStatus.setColorFilter(chatRoomInfo.isOnline()
-                ? Color.parseColor("#1B8522")
-                : Color.parseColor("#D11717"));
+                ? Color.parseColor("#00FF66")
+                : Color.parseColor("#888888"));
     }
 
     private void setImage(String url, ImageView imageView) {
