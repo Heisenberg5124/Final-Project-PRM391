@@ -53,7 +53,8 @@ public class MatchedService {
                         Log.d("checkRemove", lastMessageMap.get("id").toString());
                         getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, lastMessage, lastMessageMap.get("id").toString(), (Timestamp) lastMessageMap.get("sendTime"), (Boolean) lastMessageMap.get("isSeen"), lastMessageMap.get("sender").toString());
                     } else {
-                        getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, null, null, null, null, null);
+                        Log.d("checkNullMessageID", "checkNullMessageID: dm xaki");
+                        getAnotherMatchedInfo(onInforAnotherUserChange, otherUid, "", "0000", Timestamp.now(), false, currentUserID);
                     }
                 }
             }
@@ -79,7 +80,7 @@ public class MatchedService {
                     onInforAnotherUserChange.onIsOnlineChange(posInMatchedProfile, (Boolean) valueGetChatInfo.get("onlineStatus"), "Matched");
                 else if (checkChangeName((String) valueGetChatInfo.get("name"), isMatchedProfile))
                     onInforAnotherUserChange.onNameChange(posInMatchedProfile, (String) valueGetChatInfo.get("name"), "Matched");
-                else if (lastMessageID != null) {
+                else if (!lastMessageID.equals("0000")) {
                     onInforAnotherUserChange.onNewChattedProfile(posInMatchedProfile, Profile);
                     matchedProfileList.remove(posInMatchedProfile);
                     chatProfileList.add(0, Profile);
@@ -102,7 +103,7 @@ public class MatchedService {
                         chatProfileList.remove(isChattedProfile);
                         chatProfileList.add(0, Profile);
                     }
-                } else if (Profile.getLastMessage() == null) {
+                } else if (Profile.getLastMessage().equals("")) {
                     onInforAnotherUserChange.onNewMatchedProfile(Profile);
                     matchedProfileList.add(Profile);
                 } else {
@@ -131,6 +132,8 @@ public class MatchedService {
     }
 
     private Boolean checkChangeLastMessageByID(String newMessageID, MatchedProfile matchedProfile) {
+        Log.d("checknullMessageID2", matchedProfile.getLastMessageID());
+        Log.d("checknullMessageID", newMessageID);
         return !matchedProfile.getLastMessageID().equals(newMessageID);
     }
 

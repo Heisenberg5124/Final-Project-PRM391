@@ -21,6 +21,7 @@ import com.aminography.choosephotohelper.ChoosePhotoHelper;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
 import at.markushi.ui.CircleButton;
 import fpt.life.finalproject.MainActivity;
@@ -28,6 +29,7 @@ import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.MessageAdapter;
 import fpt.life.finalproject.dto.chat.ChatRoom;
 import fpt.life.finalproject.screen.viewOtherProfile.ViewOtherProfile_Activity;
+import fpt.life.finalproject.service.OnChangeService;
 import fpt.life.finalproject.service.chat.ChatService;
 import fpt.life.finalproject.service.chat.OnFirebaseListener;
 
@@ -40,6 +42,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
     private EditText editTextChatText;
     private TextView textViewChatName, textViewChatStatus;
     private RecyclerView recyclerViewChatMessages;
+    private OnChangeService onChangeService;
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -78,6 +81,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         setContentView(R.layout.activity_chat);
 
         getUid();
+        onChangeService = new OnChangeService();
 
         chatService = new ChatService(this, currentUid, otherUid);
         initComponents();
@@ -144,8 +148,9 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
     }
 
     private void setImage(String url, ImageView imageView) {
-        Glide.with(this)
+        Picasso.get()
                 .load(url)
+                .fit()
                 .centerCrop()
                 .into(imageView);
     }
@@ -230,5 +235,17 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         choosePhotoHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onResume() {
+        onChangeService.upDateStatus(true);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        onChangeService.upDateStatus(false);
+        super.onPause();
     }
 }
