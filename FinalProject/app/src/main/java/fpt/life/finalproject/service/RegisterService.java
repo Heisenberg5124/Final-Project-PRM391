@@ -51,7 +51,12 @@ public class RegisterService {
         this.storageReference = FirebaseStorage.getInstance().getReference("profile_photos");
         this.collectionReference = FirebaseFirestore.getInstance()
                 .collection("users");
-        this.locationService = new LocationService((Activity) context, registrationProfile.getUid(),null);
+        this.locationService = new LocationService((Activity) context, registrationProfile.getUid(), new OnUpdateLocationFirebaseListener() {
+            @Override
+            public void onCompleteUpdateLocation() {
+
+            }
+        });
     }
 
     @SneakyThrows
