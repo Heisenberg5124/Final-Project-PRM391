@@ -194,6 +194,7 @@ public class ChatActivity extends AppCompatActivity implements OnFirebaseListene
         Log.d("Message", "seenAllMessagesUI: ");
         messageAdapter.notifyDataSetChanged();
         recyclerViewChatMessages.scrollToPosition(chatService.getMessages().size() - 1);
+        chatService.seenAllMessages();
     }
 
     @Override
