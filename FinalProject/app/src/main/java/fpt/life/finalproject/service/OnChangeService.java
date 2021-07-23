@@ -179,7 +179,7 @@ public class OnChangeService {
                 .setContentTitle("New Matched!")
                 .setContentText("Ting Ting! You have new matched. Let's see who it is!")
                 .setSmallIcon(R.drawable.logo)
-                .setContentIntent(pendingIntent)
+//                .setContentIntent(pendingIntent)
                 .build();
         if (notificationManager !=null){
             int random = (int)new Date().getTime();

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fpt.life.finalproject.MainActivity;
 import fpt.life.finalproject.R;
 import fpt.life.finalproject.adapter.ChatAdapter;
 import fpt.life.finalproject.adapter.MatchedAdapter;
@@ -139,10 +140,10 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
     }
     @Override
     public void onItemClick(String otherUid) {
-        Intent intent = new Intent(getContext(), ChatActivity.class);
+        Intent intent = new Intent((MainActivity)getActivity(), ChatActivity.class);
         intent.putExtra("currentUid", uid);
         intent.putExtra("otherUid", otherUid);
-        startActivityForResult(intent, 100);
+        startActivity(intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 
     private void getData() {
@@ -220,7 +221,7 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100) {
+
             if (resultCode == RESULT_OK) {
                 Log.d("Intent", "onActivityResult: " + data.getSerializableExtra("unmatchedUid"));
                 String unmatchedUid = (String) data.getSerializableExtra("unmatchedUid");
@@ -236,6 +237,6 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
                     matchedAdapter.notifyDataSetChanged();
                 }
             }
-        }
+
     }
 }
