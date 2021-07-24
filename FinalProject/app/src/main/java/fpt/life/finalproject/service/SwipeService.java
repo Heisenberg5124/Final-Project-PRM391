@@ -116,7 +116,7 @@ public class SwipeService {
     }
 
     private boolean checkValidUser(User anotherUser) {
-        if (isLocationNull(anotherUser)) return false;
+        if (isLocationNull(anotherUser) || isLocationNull(currentUser)) return false;
         return !isDuplicateCurrentId(anotherUser)
                 && isGenderIWant(anotherUser)
                 && isGenderTheyWant(anotherUser)
