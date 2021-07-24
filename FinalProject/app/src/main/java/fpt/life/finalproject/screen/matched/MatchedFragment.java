@@ -112,8 +112,14 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.equals("")){
+                    rvMatched.setAdapter(matchedAdapter);
                     rvChatted.setAdapter(chatAdapter);
+                    txtTitleChat.setVisibility(View.VISIBLE);
+                    txtTitleMatch.setVisibility(View.VISIBLE);
                 }else{
+                    txtTitleChat.setVisibility(View.GONE);
+                    txtTitleMatch.setVisibility(View.GONE);
+                    rvMatched.setAdapter(null);
                     if (newText.length()==1){
                         profileList.clear();
                         profileList.addAll(profileMatchedList);
