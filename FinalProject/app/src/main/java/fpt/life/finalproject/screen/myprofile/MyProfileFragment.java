@@ -132,7 +132,7 @@ public class MyProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), EditPhoto_Activity.class);
-                intent.putExtra("imagesListDB", myProfile.getListImage());
+//                intent.putExtra("imagesListDB", myProfile.getListImage());
                 startActivityForResult(intent,0);
             }
         });
@@ -279,7 +279,7 @@ public class MyProfileFragment extends Fragment {
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DATE);
-        eTxtBirthday.setText(mDay + "/" + (mMonth) + "/" + mYear);
+        eTxtBirthday.setText(mDay + "/" + (mMonth + 1) + "/" + mYear);
         eTxtBirthday.setOnClickListener(v -> {
             setDate(eTxtBirthday, mYear, mMonth, mDay);
         });
@@ -290,7 +290,7 @@ public class MyProfileFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 (view, year, monthOfYear, dayOfMonth) -> {
                     tv.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-                    myProfileService.updateBirthDay("birthday", myProfileService.dateToTimeStamp(year, monthOfYear, dayOfMonth));
+                    myProfileService.updateBirthDay("birthday", myProfileService.dateToTimeStamp(year, monthOfYear + 1, dayOfMonth));
                 }, mYear, mMonth, mDay);
         datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
         datePickerDialog.show();

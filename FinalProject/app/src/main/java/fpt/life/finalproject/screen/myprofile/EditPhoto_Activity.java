@@ -66,13 +66,13 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
 
 
 //        getImageList("SQYPZpR4mFOhTe0qdeF2lCHXCk83");
-////        getImageList(FirebaseAuth.getInstance().getUid());
+        getImageList(FirebaseAuth.getInstance().getUid());
 
-        convertToPhotoList((ArrayList<String>) this.getIntent().getSerializableExtra("imagesListDB"));
+        /*convertToPhotoList((ArrayList<String>) this.getIntent().getSerializableExtra("imagesListDB"));
         initComponents();
         initRecyclerView();
         initFireBase();
-        onClickButtonDone();
+        onClickButtonDone();*/
 
     }
 
@@ -193,7 +193,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
         return -1;
     }
 
-    /*private void getImageList(String userId){
+    private void getImageList(String userId){
         db.collection("users").document(userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -213,7 +213,7 @@ public class EditPhoto_Activity extends AppCompatActivity implements RecyclerIte
                         onClickButtonDone();
                     }
                 });
-    }*/
+    }
     private void convertToPhotoList(ArrayList<String> imageList){
         for (int i = 0; i < imageList.size(); i++) {
             Photo photo = new Photo();

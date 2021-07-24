@@ -113,7 +113,13 @@ public class MatchedFragment extends Fragment implements MatchedAdapter.OnItemLi
             public boolean onQueryTextChange(String newText) {
                 if (newText.equals("")){
                     rvChatted.setAdapter(chatAdapter);
+                    rvMatched.setAdapter(matchedAdapter);
+                    txtTitleChat.setVisibility(View.VISIBLE);
+                    txtTitleMatch.setVisibility(View.VISIBLE);
                 }else{
+                    txtTitleChat.setVisibility(View.GONE);
+                    txtTitleMatch.setVisibility(View.GONE);
+                    rvMatched.setAdapter(null);
                     if (newText.length()==1){
                         profileList.clear();
                         profileList.addAll(profileMatchedList);
